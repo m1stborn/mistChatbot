@@ -19,7 +19,7 @@ var (
 	err    error
 )
 
-func  main()  {
+func main() {
 	fmt.Println("Hello, this is chat bot!")
 
 	client, err = linebot.New(secretToken, accessToken)
@@ -34,10 +34,10 @@ func  main()  {
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
-	events, reqErr := client.ParseRequest(r)
+	events, err := client.ParseRequest(r)
 
-	if reqErr != nil {
-		if reqErr == linebot.ErrInvalidSignature {
+	if err != nil {
+		if err == linebot.ErrInvalidSignature {
 			w.WriteHeader(400)
 		} else {
 			w.WriteHeader(500)
