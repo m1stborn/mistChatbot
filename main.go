@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -30,7 +31,7 @@ func main() {
 
 	http.HandleFunc("/callback", callbackHandler)
 
-	log.Fatal(http.ListenAndServe(":84", nil))
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), nil))
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
