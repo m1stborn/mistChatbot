@@ -7,9 +7,9 @@ import (
 )
 
 type TwitchClient struct {
-	client            *helix.Client
-	callbackUrl       string
-	secretWord        string
+	Client            *helix.Client
+	CallbackUrl       string
+	SecretWord        string
 	twitchClientID    string
 	twitchAccessToken string
 }
@@ -29,13 +29,15 @@ type TwitchClient struct {
 //}
 
 func (c *TwitchClient) GetSubscriptions() (idList []string) {
-	resp, err := c.client.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
+	resp, err := c.Client.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
 		Status: helix.EventSubStatusEnabled, // This is optional
 	})
 
 	//TODO integrate logging and handle error
 	if err != nil {
+		fmt.Println("GetSubscriptions err:", err)
 	}
+	fmt.Printf("GetSubscriptions resp:%+v\n", resp)
 	if resp != nil {
 		for _, data := range resp.Data.EventSubSubscriptions {
 			fmt.Println(data)
@@ -46,11 +48,11 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 	return idList //return current eventSubscriptions id
 }
 
-func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string) {
+func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, route string) {
 	idList := c.GetUsersID([]string{broadcasterName})
 	id := idList[0]
 
-	resp, err := c.client.CreateEventSubSubscription(&helix.EventSubSubscription{
+	resp, err := c.Client.CreateEventSubSubscription(&helix.EventSubSubscription{
 		Type:    helix.EventSubTypeChannelFollow,
 		Version: "1",
 		Condition: helix.EventSubCondition{
@@ -58,23 +60,23 @@ func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string) {
 		},
 		Transport: helix.EventSubTransport{
 			Method:   "webhook",
-			Callback: c.callbackUrl,
-			Secret:   c.secretWord,
+			Callback: c.CallbackUrl + route,
+			Secret:   c.SecretWord,
 		},
 	})
 
 	//TODO integrate logging and handle error
 	if err != nil {
-		fmt.Println("eventSubErr:", err)
+		fmt.Println("CreateChannelFollowSubscription err:", err)
 	}
-	fmt.Printf("%+v\n", resp)
+	fmt.Printf("CreateChannelFollowSubscription resp:%+v\n", resp)
 }
 
-func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string) {
+func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, route string) {
 	idList := c.GetUsersID([]string{broadcasterName})
 	id := idList[0]
 
-	resp, err := c.client.CreateEventSubSubscription(&helix.EventSubSubscription{
+	resp, err := c.Client.CreateEventSubSubscription(&helix.EventSubSubscription{
 		Type:    helix.EventSubTypeStreamOnline,
 		Version: "1",
 		Condition: helix.EventSubCondition{
@@ -82,31 +84,31 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string) {
 		},
 		Transport: helix.EventSubTransport{
 			Method:   "webhook",
-			Callback: c.callbackUrl,
-			Secret:   c.secretWord,
+			Callback: c.CallbackUrl + route,
+			Secret:   c.SecretWord,
 		},
 	})
 
 	//TODO integrate logging and handle error
 	if err != nil {
-		fmt.Println("eventSubErr:", err)
+		fmt.Println("CreateStreamOnlineSubscription err:", err)
 	}
-	fmt.Printf("%+v\n", resp)
+	fmt.Printf("CreateStreamOnlineSubscription resp:%+v\n", resp)
 }
 
 func (c *TwitchClient) DeleteSubscriptions(idList []string) {
 	for _, id := range idList {
-		deleteResp, deleteErr := c.client.RemoveEventSubSubscription(id)
+		deleteResp, deleteErr := c.Client.RemoveEventSubSubscription(id)
 
 		//TODO integrate logging and handle error
 		if deleteErr != nil {
 		}
-		fmt.Printf("%+v\n", deleteResp)
+		fmt.Printf("DeleteSubscriptions:%+v\n", deleteResp)
 	}
 }
 
 func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
-	userResp, userErr := c.client.GetUsers(&helix.UsersParams{
+	userResp, userErr := c.Client.GetUsers(&helix.UsersParams{
 		//IDs:    []string{"twitch user id"},
 		//Logins: []string{"twitch user name"},
 		Logins: usernameList,
@@ -114,8 +116,14 @@ func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
 
 	//TODO integrate logging and handle error
 	if userErr != nil {
-		fmt.Println("get user error:", userErr)
+		fmt.Println("GetUsersID error:", userErr)
 	}
-	fmt.Printf("%+v\n", userResp)
+	fmt.Printf("GetUsersID resp:%+v\n", userResp)
+
+	if userResp != nil {
+		for _, user := range userResp.Data.Users {
+			idList = append(idList, user.ID)
+		}
+	}
 	return idList
 }

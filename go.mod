@@ -3,7 +3,7 @@ module github.com/m1stborn/mistChatbot
 go 1.16
 
 require (
-	github.com/joho/godotenv v1.3.0 // indirect
-	github.com/line/line-bot-sdk-go v7.8.0+incompatible // indirect
-	github.com/nicklaw5/helix v1.24.2 // indirect
+	github.com/joho/godotenv v1.3.0
+	github.com/line/line-bot-sdk-go v7.8.0+incompatible
+	github.com/nicklaw5/helix v1.24.2
 )
