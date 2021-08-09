@@ -21,7 +21,7 @@ const (
 	twitchAccessToken = "iatwfdt5hws5ggusoe7zf09odx0hsk"
 	secretWord        = "s3cre7w0rd"
 
-	callbackUrl = "https://salty-ocean-83656.herokuapp.com/"
+	callbackUrl = "https://salty-ocean-83656.herokuapp.com"
 )
 
 var (
