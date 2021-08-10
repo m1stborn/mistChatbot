@@ -7,10 +7,10 @@ import (
 	"os"
 
 	"github.com/m1stborn/mistChatbot/internal/pkg/twitchmod"
-	"github.com/nicklaw5/helix"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"github.com/nicklaw5/helix"
 )
 
 const (
@@ -64,6 +64,8 @@ func main() {
 
 	//step 2.0: delete old subscription during develop and testing
 	subIds := twitch.GetSubscriptions()
+	fmt.Println("event subID to delete:", subIds)
+
 	twitch.DeleteSubscriptions(subIds)
 
 	//step 2.1: Create Event subscriptions
