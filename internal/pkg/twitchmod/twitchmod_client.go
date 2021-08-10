@@ -3,6 +3,8 @@ package twitchmod
 import (
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/nicklaw5/helix"
 )
 
@@ -33,19 +35,29 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 		Status: helix.EventSubStatusEnabled, // This is optional
 	})
 
-	//TODO integrate logging and handle error
 	if err != nil {
-		//fmt.Println("GetSubscriptions err:", err)
 		logger.WithField("func", "GetSubscriptions").Error(err.Error())
 	}
-	//fmt.Printf("GetSubscriptions resp:%+v\n", resp)
-	logger.WithField("func", "GetSubscriptions").Infof("%+v\n", resp)
-
 	if resp != nil {
+		//TODO: logging whole response?
+		//logger.WithFields(log.Fields{
+		//	"func": "GetSubscriptions",
+		//}).Infof(fmt.Sprintf("resp.data: %+v", resp.Data))
+
+		//var respList []struct {
+		//	ID string
+		//	TYPE string
+		//}
 		for _, data := range resp.Data.EventSubSubscriptions {
-			fmt.Println(data)
 			idList = append(idList, data.ID)
+			//respList = append(respList, struct {
+			//	ID string
+			//	TYPE string
+			//}{data.ID,data.Type})
 		}
+		logger.WithFields(log.Fields{
+			"func": "GetSubscriptions",
+		}).Infof(fmt.Sprintf("Subscriptions ID List: %+v", idList))
 	}
 
 	return idList //return current eventSubscriptions id
@@ -68,12 +80,15 @@ func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, r
 		},
 	})
 
-	//TODO integrate logging and handle error
 	if err != nil {
 		logger.WithField("func", "CreateChannelFollowSubscription").Error(err.Error())
 	}
-	//fmt.Printf("CreateChannelFollowSubscription resp:%+v\n", resp)
-	logger.WithField("func", "CreateChannelFollowSubscription").Infof("%+v\n", resp)
+	if resp != nil {
+		//TODO: logging whole response?
+		logger.WithFields(log.Fields{
+			"func": "CreateChannelFollowSubscription",
+		}).Infof(fmt.Sprintf("broadcaster ID: %+v", id))
+	}
 }
 
 func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, route string) {
@@ -93,46 +108,58 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, ro
 		},
 	})
 
-	//TODO integrate logging and handle error
 	if err != nil {
-		//fmt.Println("CreateStreamOnlineSubscription err:", err)
-		logger.WithField("func", "CreateEventSubSubscription").Error(err.Error())
+		logger.WithField("func", "CreateStreamOnlineSubscription").Error(err.Error())
 	}
-	//fmt.Printf("CreateStreamOnlineSubscription resp:%+v\n", resp)
-	logger.WithField("func", "CreateEventSubSubscription").Infof("%+v\n", resp)
+	if resp != nil {
+		//TODO: logging whole response?
+		logger.WithFields(log.Fields{
+			"func": "CreateStreamOnlineSubscription",
+		}).Infof(fmt.Sprintf("broadcaster ID: %+v", id))
+
+	}
 }
 
 func (c *TwitchClient) DeleteSubscriptions(idList []string) {
 	for _, id := range idList {
 		deleteResp, deleteErr := c.Client.RemoveEventSubSubscription(id)
 
-		//TODO integrate logging and handle error
 		if deleteErr != nil {
 			logger.WithField("func", "DeleteSubscriptions").Error(deleteErr.Error())
 		}
-		fmt.Printf("DeleteSubscriptions:%+v\n", deleteResp)
+		if deleteResp != nil {
+			logger.WithFields(log.Fields{
+				"func": "DeleteSubscriptions",
+			}).Infof(fmt.Sprintf("deleteID: %+v", id))
+		}
 	}
 }
 
 func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
 	userResp, userErr := c.Client.GetUsers(&helix.UsersParams{
+		//example usage
 		//IDs:    []string{"twitch user id"},
 		//Logins: []string{"twitch user name"},
 		Logins: usernameList,
 	})
 
-	//TODO integrate logging and handle error
 	if userErr != nil {
-		//fmt.Println("GetUsersID error:", userErr)
 		logger.WithField("func", "GetUsersID").Error(userErr.Error())
 	}
-	//fmt.Printf("GetUsersID resp:%+v\n", userResp)
-	logger.WithField("func", "GetUsersID").Infof("%+v\n", userResp)
-
 	if userResp != nil {
+		//TODO: logging whole response?
+		//logger.WithFields(log.Fields{
+		//	"func": "GetUsersID",
+		//}).Infof(fmt.Sprintf("resp.data: %+v", userResp.Data))
+
 		for _, user := range userResp.Data.Users {
 			idList = append(idList, user.ID)
 		}
+
+		logger.WithFields(log.Fields{
+			"func": "GetUsersID",
+		}).Infof(fmt.Sprintf("User ID List: %+v", idList))
 	}
+
 	return idList
 }
