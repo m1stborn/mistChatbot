@@ -35,9 +35,12 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 
 	//TODO integrate logging and handle error
 	if err != nil {
-		fmt.Println("GetSubscriptions err:", err)
+		//fmt.Println("GetSubscriptions err:", err)
+		logger.WithField("func", "GetSubscriptions").Error(err.Error())
 	}
-	fmt.Printf("GetSubscriptions resp:%+v\n", resp)
+	//fmt.Printf("GetSubscriptions resp:%+v\n", resp)
+	logger.WithField("func", "GetSubscriptions").Infof("%+v\n", resp)
+
 	if resp != nil {
 		for _, data := range resp.Data.EventSubSubscriptions {
 			fmt.Println(data)
@@ -67,9 +70,10 @@ func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, r
 
 	//TODO integrate logging and handle error
 	if err != nil {
-		fmt.Println("CreateChannelFollowSubscription err:", err)
+		logger.WithField("func", "CreateChannelFollowSubscription").Error(err.Error())
 	}
-	fmt.Printf("CreateChannelFollowSubscription resp:%+v\n", resp)
+	//fmt.Printf("CreateChannelFollowSubscription resp:%+v\n", resp)
+	logger.WithField("func", "CreateChannelFollowSubscription").Infof("%+v\n", resp)
 }
 
 func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, route string) {
@@ -91,9 +95,11 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, ro
 
 	//TODO integrate logging and handle error
 	if err != nil {
-		fmt.Println("CreateStreamOnlineSubscription err:", err)
+		//fmt.Println("CreateStreamOnlineSubscription err:", err)
+		logger.WithField("func", "CreateEventSubSubscription").Error(err.Error())
 	}
-	fmt.Printf("CreateStreamOnlineSubscription resp:%+v\n", resp)
+	//fmt.Printf("CreateStreamOnlineSubscription resp:%+v\n", resp)
+	logger.WithField("func", "CreateEventSubSubscription").Infof("%+v\n", resp)
 }
 
 func (c *TwitchClient) DeleteSubscriptions(idList []string) {
@@ -102,6 +108,7 @@ func (c *TwitchClient) DeleteSubscriptions(idList []string) {
 
 		//TODO integrate logging and handle error
 		if deleteErr != nil {
+			logger.WithField("func", "DeleteSubscriptions").Error(deleteErr.Error())
 		}
 		fmt.Printf("DeleteSubscriptions:%+v\n", deleteResp)
 	}
@@ -116,9 +123,11 @@ func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
 
 	//TODO integrate logging and handle error
 	if userErr != nil {
-		fmt.Println("GetUsersID error:", userErr)
+		//fmt.Println("GetUsersID error:", userErr)
+		logger.WithField("func", "GetUsersID").Error(userErr.Error())
 	}
-	fmt.Printf("GetUsersID resp:%+v\n", userResp)
+	//fmt.Printf("GetUsersID resp:%+v\n", userResp)
+	logger.WithField("func", "GetUsersID").Infof("%+v\n", userResp)
 
 	if userResp != nil {
 		for _, user := range userResp.Data.Users {
