@@ -64,8 +64,6 @@ func main() {
 
 	//step 2.0: delete old subscription during develop and testing
 	subIds := twitch.GetSubscriptions()
-	fmt.Println("event subID to delete:", subIds)
-
 	twitch.DeleteSubscriptions(subIds)
 
 	//step 2.1: Create Event subscriptions
