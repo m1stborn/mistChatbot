@@ -54,7 +54,7 @@ func EventSubFollow(w http.ResponseWriter, r *http.Request) {
 	logger.WithFields(log.Fields{
 		"func": "EventSubFollow",
 		"type": "Notify",
-	}).Infof("%s follows %s!\n", followEvent.UserName, followEvent.BroadcasterUserName)
+	}).Infof("%s follows %s!", followEvent.UserName, followEvent.BroadcasterUserName)
 
 	w.WriteHeader(200)
 	w.Write([]byte("ok"))
@@ -98,7 +98,7 @@ func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
 	logger.WithFields(log.Fields{
 		"func": "EventSubFollow",
 		"type": "Notify",
-	}).Infof("%s start streaming!\n", streamOnlineEvent.BroadcasterUserName)
+	}).Infof("%s start streaming!", streamOnlineEvent.BroadcasterUserName)
 
 	w.WriteHeader(200)
 	w.Write([]byte("ok"))

@@ -39,14 +39,25 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 		logger.WithField("func", "GetSubscriptions").Error(err.Error())
 	}
 	if resp != nil {
-		logger.WithFields(log.Fields{
-			"func": "GetSubscriptions",
-		}).Infof(fmt.Sprintf("resp.data: %+v", resp.Data))
+		//TODO: logging whole response?
+		//logger.WithFields(log.Fields{
+		//	"func": "GetSubscriptions",
+		//}).Infof(fmt.Sprintf("resp.data: %+v", resp.Data))
 
+		//var respList []struct {
+		//	ID string
+		//	TYPE string
+		//}
 		for _, data := range resp.Data.EventSubSubscriptions {
 			idList = append(idList, data.ID)
+			//respList = append(respList, struct {
+			//	ID string
+			//	TYPE string
+			//}{data.ID,data.Type})
 		}
-
+		logger.WithFields(log.Fields{
+			"func": "GetSubscriptions",
+		}).Infof(fmt.Sprintf("Subscriptions ID List: %+v", idList))
 	}
 
 	return idList //return current eventSubscriptions id
@@ -73,10 +84,10 @@ func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, r
 		logger.WithField("func", "CreateChannelFollowSubscription").Error(err.Error())
 	}
 	if resp != nil {
+		//TODO: logging whole response?
 		logger.WithFields(log.Fields{
 			"func": "CreateChannelFollowSubscription",
-		}).Infof(fmt.Sprintf("resp.data: %+v", resp.Data))
-
+		}).Infof(fmt.Sprintf("broadcaster ID: %+v", id))
 	}
 }
 
@@ -101,9 +112,10 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, ro
 		logger.WithField("func", "CreateStreamOnlineSubscription").Error(err.Error())
 	}
 	if resp != nil {
+		//TODO: logging whole response?
 		logger.WithFields(log.Fields{
 			"func": "CreateStreamOnlineSubscription",
-		}).Infof(fmt.Sprintf("resp.data: %+v", resp.Data))
+		}).Infof(fmt.Sprintf("broadcaster ID: %+v", id))
 
 	}
 }
@@ -118,13 +130,14 @@ func (c *TwitchClient) DeleteSubscriptions(idList []string) {
 		if deleteResp != nil {
 			logger.WithFields(log.Fields{
 				"func": "DeleteSubscriptions",
-			}).Infof(fmt.Sprintf("deleteID: %v", id))
+			}).Infof(fmt.Sprintf("deleteID: %+v", id))
 		}
 	}
 }
 
 func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
 	userResp, userErr := c.Client.GetUsers(&helix.UsersParams{
+		//example usage
 		//IDs:    []string{"twitch user id"},
 		//Logins: []string{"twitch user name"},
 		Logins: usernameList,
@@ -134,13 +147,18 @@ func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
 		logger.WithField("func", "GetUsersID").Error(userErr.Error())
 	}
 	if userResp != nil {
-		logger.WithFields(log.Fields{
-			"func": "GetUsersID",
-		}).Infof(fmt.Sprintf("resp.data: %+v", userResp.Data))
+		//TODO: logging whole response?
+		//logger.WithFields(log.Fields{
+		//	"func": "GetUsersID",
+		//}).Infof(fmt.Sprintf("resp.data: %+v", userResp.Data))
 
 		for _, user := range userResp.Data.Users {
 			idList = append(idList, user.ID)
 		}
+
+		logger.WithFields(log.Fields{
+			"func": "GetUsersID",
+		}).Infof(fmt.Sprintf("User ID List: %+v", idList))
 	}
 
 	return idList
