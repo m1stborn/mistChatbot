@@ -35,6 +35,11 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 		Status: helix.EventSubStatusEnabled, // This is optional
 	})
 
+	logger.WithFields(log.Fields{
+		"field1": "GetSubscriptions",
+		"field2": "TestingWithFields",
+	})
+
 	if err != nil {
 		logger.WithField("func", "GetSubscriptions").Error(err.Error())
 	}
@@ -45,7 +50,6 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 		})
 
 		for _, data := range resp.Data.EventSubSubscriptions {
-			fmt.Println(data)
 			idList = append(idList, data.ID)
 		}
 
