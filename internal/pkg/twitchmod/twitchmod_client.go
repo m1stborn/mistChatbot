@@ -35,28 +35,17 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 		Status: helix.EventSubStatusEnabled, // This is optional
 	})
 
-	logger.WithFields(log.Fields{
-		"field1": "GetSubscriptions",
-		"field2": "TestingWithFields",
-	})
-
 	if err != nil {
 		logger.WithField("func", "GetSubscriptions").Error(err.Error())
 	}
 	if resp != nil {
 		logger.WithFields(log.Fields{
-			"func":      "GetSubscriptions",
-			"resp.data": fmt.Sprintf("%+v\n", resp.Data),
-		})
+			"func": "GetSubscriptions",
+		}).Infof(fmt.Sprintf("resp.data: %+v", resp.Data))
 
 		for _, data := range resp.Data.EventSubSubscriptions {
 			idList = append(idList, data.ID)
 		}
-
-		logger.WithFields(log.Fields{
-			"func":   "GetSubscriptions",
-			"idList": idList,
-		})
 
 	}
 
@@ -85,9 +74,9 @@ func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, r
 	}
 	if resp != nil {
 		logger.WithFields(log.Fields{
-			"func":      "CreateChannelFollowSubscription",
-			"resp.data": fmt.Sprintf("%+v\n", resp.Data),
-		})
+			"func": "CreateChannelFollowSubscription",
+		}).Infof(fmt.Sprintf("resp.data: %+v", resp.Data))
+
 	}
 }
 
@@ -113,9 +102,9 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, ro
 	}
 	if resp != nil {
 		logger.WithFields(log.Fields{
-			"func":      "CreateStreamOnlineSubscription",
-			"resp.data": fmt.Sprintf("%+v\n", resp.Data),
-		})
+			"func": "CreateStreamOnlineSubscription",
+		}).Infof(fmt.Sprintf("resp.data: %+v", resp.Data))
+
 	}
 }
 
@@ -128,9 +117,8 @@ func (c *TwitchClient) DeleteSubscriptions(idList []string) {
 		}
 		if deleteResp != nil {
 			logger.WithFields(log.Fields{
-				"func":     "DeleteSubscriptions",
-				"deleteID": id,
-			})
+				"func": "DeleteSubscriptions",
+			}).Infof(fmt.Sprintf("deleteID: %v", id))
 		}
 	}
 }
@@ -147,9 +135,8 @@ func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
 	}
 	if userResp != nil {
 		logger.WithFields(log.Fields{
-			"func":      "GetUsersID",
-			"resp.data": fmt.Sprintf("%+v\n", userResp.Data),
-		})
+			"func": "GetUsersID",
+		}).Infof(fmt.Sprintf("resp.data: %+v", userResp.Data))
 
 		for _, user := range userResp.Data.Users {
 			idList = append(idList, user.ID)
