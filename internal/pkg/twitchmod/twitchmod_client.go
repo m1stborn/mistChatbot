@@ -40,7 +40,7 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 	}
 	if resp != nil {
 		logger.WithFields(log.Fields{
-			"func":      "CreateChannelFollowSubscription",
+			"func":      "GetSubscriptions",
 			"resp.data": resp.Data,
 		})
 
@@ -50,7 +50,7 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 		}
 
 		logger.WithFields(log.Fields{
-			"func":   "CreateChannelFollowSubscription",
+			"func":   "GetSubscriptions",
 			"idList": idList,
 		})
 
@@ -105,12 +105,13 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, ro
 	})
 
 	if err != nil {
-		logger.WithField("func", "CreateEventSubSubscription").Error(err.Error())
+		logger.WithField("func", "CreateStreamOnlineSubscription").Error(err.Error())
 	}
 	if resp != nil {
 		logger.WithFields(log.Fields{
-			"func":      "CreateEventSubSubscription",
-			"resp.data": resp.Data,
+			"func":      "CreateStreamOnlineSubscription",
+			"resp.data": fmt.Sprintf("%+v\n", resp.Data),
+			//"resp.data": resp.Data,
 		})
 	}
 }
@@ -144,7 +145,7 @@ func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
 	if userResp != nil {
 		logger.WithFields(log.Fields{
 			"func":      "GetUsersID",
-			"resp.data": userResp.Data,
+			"resp.data": fmt.Sprintf("%+v\n", userResp.Data),
 		})
 
 		for _, user := range userResp.Data.Users {
