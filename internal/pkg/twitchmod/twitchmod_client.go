@@ -41,7 +41,7 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 	if resp != nil {
 		logger.WithFields(log.Fields{
 			"func":      "GetSubscriptions",
-			"resp.data": resp.Data,
+			"resp.data": fmt.Sprintf("%+v\n", resp.Data),
 		})
 
 		for _, data := range resp.Data.EventSubSubscriptions {
@@ -82,7 +82,7 @@ func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, r
 	if resp != nil {
 		logger.WithFields(log.Fields{
 			"func":      "CreateChannelFollowSubscription",
-			"resp.data": resp.Data,
+			"resp.data": fmt.Sprintf("%+v\n", resp.Data),
 		})
 	}
 }
@@ -111,7 +111,6 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, ro
 		logger.WithFields(log.Fields{
 			"func":      "CreateStreamOnlineSubscription",
 			"resp.data": fmt.Sprintf("%+v\n", resp.Data),
-			//"resp.data": resp.Data,
 		})
 	}
 }
