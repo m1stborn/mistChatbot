@@ -13,22 +13,21 @@ import (
 	"github.com/nicklaw5/helix"
 )
 
-const (
-	lineSecretToken = "4fabd1de4303c0dfc00999e0200a9438"
-	lineAccessToken = "2WjKzdmNn/lpLHSa0Yv+G50sBrV7gvTg7hqbqZS+wpfVJg2fqYmwFWWxtBkBMjl2KZtJuAhCXXds7lqlCcQyVhVozxloEh3UTOwnWp5km735r6hT2f2zMDG7Av7mXmcJq/HqJABeagd5f9IQRyydQwdB04t89/1O/w1cDnyilFU="
+var (
+	lineSecretToken = os.Getenv("LINE_CHANNEL_SECRET")
+	lineAccessToken = os.Getenv("LINE_CHANNEL_ACCESSTOKEN")
 
-	twitchClientID    = "uq2sfwwume0bcdxsrfr7yvhlm8omkg"
-	twitchAccessToken = "iatwfdt5hws5ggusoe7zf09odx0hsk"
+	twitchClientID    = os.Getenv("TWITCH_CLIENT_ID")
+	twitchAccessToken = os.Getenv("TWITCH_ACCESSTOKEN")
 	secretWord        = "s3cre7w0rd"
 
-	callbackUrl = "https://salty-ocean-83656.herokuapp.com"
+	callbackUrl = os.Getenv("CALLBACK_URL")
+	port        = ":" + os.Getenv("PORT")
 )
 
 var (
 	lineClient *linebot.Client
 	err        error
-
-	port = ":" + os.Getenv("PORT")
 )
 
 func nweTwitch() twitchmod.TwitchClient {
