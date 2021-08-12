@@ -27,6 +27,8 @@ var (
 
 	lineClient *linebot.Client
 	err        error
+
+	testStreamer = []string{"muse_tw", "lck", "dogdog", "lolpacifictw", "m989876525", "qq7925168", "never_loses"}
 )
 
 func nweTwitch() twitchmod.TwitchClient {
@@ -69,6 +71,10 @@ func main() {
 	//step 2.1: Create Event subscriptions
 	twitch.CreateChannelFollowSubscription("twitch", "/callback/channelFollow")
 	twitch.CreateStreamOnlineSubscription("twitch", "/callback/streamOnline")
+
+	for _, streamer := range testStreamer {
+		twitch.CreateChannelFollowSubscription(streamer, "/callback/streamOnline")
+	}
 
 	//step 2.2: Create http router for twitch webhook
 	http.HandleFunc("/callback/channelFollow", twitchmod.EventSubFollow)
