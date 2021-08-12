@@ -73,7 +73,7 @@ func main() {
 	twitch.CreateStreamOnlineSubscription("twitch", "/callback/streamOnline")
 
 	for _, streamer := range testStreamer {
-		twitch.CreateChannelFollowSubscription(streamer, "/callback/streamOnline")
+		twitch.CreateStreamOnlineSubscription(streamer, "/callback/streamOnline")
 	}
 
 	//step 2.2: Create http router for twitch webhook
