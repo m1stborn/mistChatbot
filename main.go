@@ -24,9 +24,7 @@ var (
 
 	callbackUrl = os.Getenv("CALLBACK_URL")
 	port        = ":" + os.Getenv("PORT")
-)
 
-var (
 	lineClient *linebot.Client
 	err        error
 )
@@ -58,6 +56,8 @@ func main() {
 
 	//step 1.1: Create http router for line webhook
 	http.HandleFunc("/line", line.Handler)
+	http.HandleFunc("/line/notify/auth", line.HandelNotifyAuth)
+	http.HandleFunc("/line/notify/callback", line.HandleNotifyCallback)
 
 	//step 2: init Twitch Client
 	twitch := nweTwitch()

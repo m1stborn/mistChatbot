@@ -11,6 +11,7 @@ import (
 var (
 	lineSecretToken = os.Getenv("LINE_CHANNEL_SECRET")
 	lineAccessToken = os.Getenv("LINE_CHANNEL_ACCESSTOKEN")
+	callbackUrl     = os.Getenv("CALLBACK_URL")
 )
 
 var (

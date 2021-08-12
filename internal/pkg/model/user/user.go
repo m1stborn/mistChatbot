@@ -7,7 +7,7 @@ type User struct {
 	Type            string `json:"type,omitempty"`
 	Email           string `json:"email"`
 	Line            string `json:"line"`
-	LineAccessToken string `json:"lineAccessToken"`
+	LineAccessToken string `json:"lineAccessToken"` //for notify usage
 
 	Subscribes []string `json:"Subscribes"`
 }
