@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/m1stborn/mistChatbot/internal/pkg/line"
 	"github.com/m1stborn/mistChatbot/internal/pkg/twitchmod"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -56,7 +57,7 @@ func main() {
 	}
 
 	//step 1.1: Create http router for line webhook
-	http.HandleFunc("/callback", callbackHandler)
+	http.HandleFunc("/line", line.Handler)
 
 	//step 2: init Twitch Client
 	twitch := nweTwitch()
