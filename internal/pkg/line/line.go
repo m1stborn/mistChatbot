@@ -3,13 +3,14 @@ package line
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
-const (
-	lineSecretToken = "4fabd1de4303c0dfc00999e0200a9438"
-	lineAccessToken = "2WjKzdmNn/lpLHSa0Yv+G50sBrV7gvTg7hqbqZS+wpfVJg2fqYmwFWWxtBkBMjl2KZtJuAhCXXds7lqlCcQyVhVozxloEh3UTOwnWp5km735r6hT2f2zMDG7Av7mXmcJq/HqJABeagd5f9IQRyydQwdB04t89/1O/w1cDnyilFU="
+var (
+	lineSecretToken = os.Getenv("LINE_CHANNEL_SECRET")
+	lineAccessToken = os.Getenv("LINE_CHANNEL_ACCESSTOKEN")
 )
 
 var (
