@@ -3,12 +3,18 @@ package twitchmod
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+
+	"github.com/m1stborn/mistChatbot/internal/pkg/line"
 
 	"github.com/nicklaw5/helix"
 	log "github.com/sirupsen/logrus"
 )
+
+var testAccessToken = os.Getenv("LINE_NOTIFY_ACCESSTOKEN")
 
 type EventSubNotification struct {
 	Subscription helix.EventSubSubscription `json:"subscription"`
@@ -58,6 +64,12 @@ func EventSubFollow(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	w.Write([]byte("ok"))
+
+	//line.SendNotify(testAccessToken,
+	//	fmt.Sprintf("%s follows %s!",
+	//		followEvent.UserName,
+	//		followEvent.BroadcasterUserName))
+
 }
 
 func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
@@ -104,4 +116,8 @@ func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ok"))
 
 	//stream online notification latency about 1 min
+	line.SendNotify(testAccessToken,
+		fmt.Sprintf("%s start streaming!\n https://www.twitch.tv/%s",
+			streamOnlineEvent.BroadcasterUserName,
+			streamOnlineEvent.BroadcasterUserName))
 }

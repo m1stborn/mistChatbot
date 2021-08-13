@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/m1stborn/mistChatbot/internal/pkg/line"
 	"github.com/m1stborn/mistChatbot/internal/pkg/twitchmod"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -23,11 +24,11 @@ var (
 
 	callbackUrl = os.Getenv("CALLBACK_URL")
 	port        = ":" + os.Getenv("PORT")
-)
 
-var (
 	lineClient *linebot.Client
 	err        error
+
+	testStreamer = []string{"muse_tw", "lck", "dogdog", "lolpacifictw", "m989876525", "qq7925168", "never_loses"}
 )
 
 func nweTwitch() twitchmod.TwitchClient {
@@ -56,7 +57,9 @@ func main() {
 	}
 
 	//step 1.1: Create http router for line webhook
-	http.HandleFunc("/callback", callbackHandler)
+	http.HandleFunc("/line", line.Handler)
+	http.HandleFunc("/line/notify/auth", line.HandelNotifyAuth)
+	http.HandleFunc("/line/notify/callback", line.HandleNotifyCallback)
 
 	//step 2: init Twitch Client
 	twitch := nweTwitch()
@@ -68,6 +71,10 @@ func main() {
 	//step 2.1: Create Event subscriptions
 	twitch.CreateChannelFollowSubscription("twitch", "/callback/channelFollow")
 	twitch.CreateStreamOnlineSubscription("twitch", "/callback/streamOnline")
+
+	for _, streamer := range testStreamer {
+		twitch.CreateStreamOnlineSubscription(streamer, "/callback/streamOnline")
+	}
 
 	//step 2.2: Create http router for twitch webhook
 	http.HandleFunc("/callback/channelFollow", twitchmod.EventSubFollow)
