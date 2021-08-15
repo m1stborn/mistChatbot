@@ -119,5 +119,6 @@ func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
 	line.SendNotify(testAccessToken,
 		fmt.Sprintf("%s start streaming!\n https://www.twitch.tv/%s",
 			streamOnlineEvent.BroadcasterUserName,
-			streamOnlineEvent.BroadcasterUserName))
+			streamOnlineEvent.BroadcasterUserLogin))
+
 }
