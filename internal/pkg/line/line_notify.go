@@ -128,7 +128,7 @@ func SendNotify(accessToken string, message string) {
 	client := &http.Client{}
 	r, httpErr := client.Do(pr)
 	if httpErr != nil {
-		log.WithError(err).Error("Notify Request Failed")
+		log.WithError(httpErr).Error("Notify Request Failed")
 		return
 	}
 	defer r.Body.Close()
