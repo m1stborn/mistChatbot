@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/m1stborn/mistChatbot/internal/pkg/line"
+	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 
 	"github.com/nicklaw5/helix"
 	log "github.com/sirupsen/logrus"
 )
 
-var testAccessToken = os.Getenv("LINE_NOTIFY_ACCESSTOKEN")
+//var testAccessToken = os.Getenv("LINE_NOTIFY_ACCESSTOKEN")
 
 type EventSubNotification struct {
 	Subscription helix.EventSubSubscription `json:"subscription"`
@@ -116,9 +116,14 @@ func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ok"))
 
 	//stream online notification latency about 1 min
-	line.SendNotify(testAccessToken,
-		fmt.Sprintf("%s start streaming!\n https://www.twitch.tv/%s",
-			streamOnlineEvent.BroadcasterUserName,
-			streamOnlineEvent.BroadcasterUserLogin))
+
+	accessTokens := model.DB.QuerySubByTwitchLoginName(streamOnlineEvent.BroadcasterUserLogin)
+
+	for _, token := range accessTokens {
+		line.SendNotify(token,
+			fmt.Sprintf("%s start streaming!\n https://www.twitch.tv/%s",
+				streamOnlineEvent.BroadcasterUserName,
+				streamOnlineEvent.BroadcasterUserLogin))
+	}
 
 }
