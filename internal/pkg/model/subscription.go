@@ -10,7 +10,7 @@ import (
 type Subscription struct {
 	gorm.Model
 
-	LineUser        string
+	Line            string
 	LineAccessToken string //line notify access token
 
 	TwitchLoginName string

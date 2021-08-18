@@ -32,12 +32,14 @@ func (d *Database) Init(uri string) {
 	if !d.db.HasTable(&User{}) {
 		err = d.db.CreateTable(&User{}).Error
 	} else {
+		err = d.db.DropTable(&User{}).Error
 		err = d.db.AutoMigrate(&User{}).Error
 	}
 
 	if !d.db.HasTable(&Subscription{}) {
 		err = d.db.CreateTable(&Subscription{}).Error
 	} else {
+		err = d.db.DropTable(&Subscription{}).Error
 		err = d.db.AutoMigrate(&Subscription{}).Error
 	}
 
