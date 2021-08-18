@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Database struct {
@@ -21,7 +21,7 @@ var DB = Database{}
 
 func (d *Database) Init(uri string) {
 
-	db, err := gorm.Open("postgres", uri)
+	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
 	if err != nil {
 		//TODO handle error
 	}
@@ -29,18 +29,18 @@ func (d *Database) Init(uri string) {
 	d.db = db
 
 	//create all the table
-	if !d.db.HasTable(&User{}) {
-		err = d.db.CreateTable(&User{}).Error
+	if !d.db.Migrator().HasTable(&User{}) {
+		err = d.db.Migrator().CreateTable(&User{})
 	} else {
-		err = d.db.DropTable(&User{}).Error
-		err = d.db.AutoMigrate(&User{}).Error
+		err = d.db.Migrator().DropTable(&User{})
+		err = d.db.Migrator().AutoMigrate(&User{})
 	}
 
-	if !d.db.HasTable(&Subscription{}) {
-		err = d.db.CreateTable(&Subscription{}).Error
+	if !d.db.Migrator().HasTable(&Subscription{}) {
+		err = d.db.Migrator().CreateTable(&Subscription{})
 	} else {
-		err = d.db.DropTable(&Subscription{}).Error
-		err = d.db.AutoMigrate(&Subscription{}).Error
+		err = d.db.Migrator().DropTable(&Subscription{})
+		err = d.db.Migrator().AutoMigrate(&Subscription{})
 	}
 
 }

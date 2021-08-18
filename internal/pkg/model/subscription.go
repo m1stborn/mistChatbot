@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 
-	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type Subscription struct {
@@ -32,8 +32,7 @@ func (d *Database) CreateSubscription(sub *Subscription) {
 }
 
 func (d *Database) UpdateSubscription(sub *Subscription) {
-	if err := d.db.Model(sub).Select([]string{"user", "twitch_id", "twitch_login_name"}).Update(sub).Error; err != nil {
-		//TODO handle error
+	if err := d.db.Model(sub).Select([]string{"user", "twitch_id", "twitch_login_name"}).Updates(sub).Error; err != nil {
 		logger.WithFields(log.Fields{
 			"pkg":  "model",
 			"func": "UpdateSubscription",
@@ -52,7 +51,6 @@ func (d *Database) QuerySubByTwitchLoginName(twitchLoginName string) []string {
 	)
 
 	if err := d.db.Where(&Subscription{TwitchLoginName: twitchLoginName}).Find(&subs).Error; err != nil {
-		//TODO handle error
 		logger.WithFields(log.Fields{
 			"pkg":  "model",
 			"func": "QuerySubByTwitchLoginName",

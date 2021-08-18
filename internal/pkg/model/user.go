@@ -8,10 +8,10 @@ import (
 type User struct {
 	gorm.Model
 
-	Line            string `gorm:"primary_key"` //line userID
+	Line            string `gorm:"primaryKey"` //line userID
 	LineAccessToken string //for notify usage
 
-	Subscriptions []Subscription `gorm:"foreignkey:Line;association_foreignkey:Line"`
+	Subscriptions []Subscription `gorm:"foreignKey:Line;references:Line"`
 
 	//Type    string //`json:"type,omitempty"`
 	//Email   string //`json:"email"`
@@ -35,7 +35,7 @@ func (d *Database) CreateUser(user *User) {
 }
 
 func (d *Database) UpdateUser(user *User) {
-	if err := d.db.Model(user).Select([]string{"line", "line_access_token"}).Update(user).Error; err != nil {
+	if err := d.db.Model(user).Select([]string{"line", "line_access_token"}).Updates(user).Error; err != nil {
 		//TODO handle error
 		logger.WithFields(log.Fields{
 			"func": "UpdateUser",
