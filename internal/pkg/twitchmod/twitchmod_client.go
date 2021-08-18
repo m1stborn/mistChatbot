@@ -87,7 +87,7 @@ func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, r
 		//TODO: logging whole response?
 		logger.WithFields(log.Fields{
 			"func": "CreateChannelFollowSubscription",
-		}).Infof(fmt.Sprintf("broadcaster ID: %+v", id))
+		}).Infof(fmt.Sprintf("broadcaster ID: %+v, Streamer: %+v", id, broadcasterName))
 	}
 }
 
@@ -115,7 +115,7 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, ro
 		//TODO: logging whole response?
 		logger.WithFields(log.Fields{
 			"func": "CreateStreamOnlineSubscription",
-		}).Infof(fmt.Sprintf("broadcaster ID: %+v", id))
+		}).Infof(fmt.Sprintf("broadcaster ID: %+v, Streamer: %+v", id, broadcasterName))
 
 	}
 }

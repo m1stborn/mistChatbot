@@ -22,5 +22,5 @@ func init() {
 
 	logger.Formatter = formatter
 	logger.Level = log.DebugLevel
-	logger.Info("Successfully initializing logrus with color")
+	//logger.Info("Successfully initializing logrus with color")
 }

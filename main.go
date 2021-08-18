@@ -74,6 +74,10 @@ func main() {
 	http.HandleFunc("/line/notify/auth", line.HandelNotifyAuth)
 	http.HandleFunc("/line/notify/callback", line.HandleNotifyCallback)
 
+	//step 1.2: Create http router for twitch webhook
+	http.HandleFunc("/twitch/channelFollow", twitchmod.EventSubFollow)
+	http.HandleFunc("/twitch/streamOnline", twitchmod.EventSubStreamOnline)
+
 	//step 2: init Twitch Client
 	twitch := nweTwitch()
 
@@ -82,20 +86,17 @@ func main() {
 	twitch.DeleteSubscriptions(subIds)
 
 	//step 2.1: Create Event subscriptions
-	twitch.CreateChannelFollowSubscription("twitch", "/callback/channelFollow")
-	twitch.CreateStreamOnlineSubscription("twitch", "/callback/streamOnline")
+	twitch.CreateChannelFollowSubscription("twitch", "/twitch/channelFollow")
+	twitch.CreateStreamOnlineSubscription("twitch", "/twitch/streamOnline")
 
 	for _, streamer := range testStreamer {
-		twitch.CreateStreamOnlineSubscription(streamer, "/callback/streamOnline")
+		twitch.CreateStreamOnlineSubscription(streamer, "/twitch/streamOnline")
 		model.DB.CreateSubscription(&model.Subscription{
 			LineUser:        testLine,
+			LineAccessToken: testAccessToken,
 			TwitchLoginName: streamer,
 		})
 	}
-
-	//step 2.2: Create http router for twitch webhook
-	http.HandleFunc("/callback/channelFollow", twitchmod.EventSubFollow)
-	http.HandleFunc("/callback/streamOnline", twitchmod.EventSubStreamOnline)
 
 	//step 3: start up our webhook server
 	fmt.Println("Starting the webserver listen on port", port)

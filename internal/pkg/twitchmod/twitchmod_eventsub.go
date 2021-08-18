@@ -40,7 +40,7 @@ func EventSubFollow(w http.ResponseWriter, r *http.Request) {
 		logger.WithField("func", "EventSubFollow").Info("no valid signature on subscription")
 		return
 	} else {
-		logger.WithField("func", "EventSubFollow").Info("verified signature for subscription")
+		//logger.WithField("func", "EventSubFollow").Info("verified signature for subscription")
 	}
 	var vals EventSubNotification
 	errF = json.NewDecoder(bytes.NewReader(body)).Decode(&vals)
@@ -51,7 +51,6 @@ func EventSubFollow(w http.ResponseWriter, r *http.Request) {
 	// if there's a challenge in the request, respond with only the challenge to verify your eventSub.
 	if vals.Challenge != "" {
 		w.Write([]byte(vals.Challenge))
-
 		return
 	}
 	var followEvent helix.EventSubChannelFollowEvent
@@ -90,7 +89,7 @@ func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
 		logger.WithField("func", "EventSubStreamOnline").Info("no valid signature on subscription")
 		return
 	} else {
-		logger.WithField("func", "EventSubStreamOnline").Info("verified signature for subscription")
+		//logger.WithField("func", "EventSubStreamOnline").Info("verified signature for subscription")
 	}
 	var vals EventSubNotification
 	errF = json.NewDecoder(bytes.NewReader(body)).Decode(&vals)

@@ -23,14 +23,14 @@ func (d *Database) CreateUser(user *User) {
 	if err := d.db.Create(user).Error; err != nil {
 		//TODO handle error
 		logger.WithFields(log.Fields{
-			"func": "CreateUser",
 			"pkg":  "model",
+			"func": "CreateUser",
 		}).Error(err)
 	}
 
 	logger.WithFields(log.Fields{
-		"func": "CreateUser",
 		"pkg":  "model",
+		"func": "CreateUser",
 	}).Info("Create User Success")
 }
 
@@ -44,7 +44,7 @@ func (d *Database) UpdateUser(user *User) {
 	}
 
 	logger.WithFields(log.Fields{
-		"func": "UpdateUser",
 		"pkg":  "model",
+		"func": "UpdateUser",
 	}).Info("Update User Success")
 }
