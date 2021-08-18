@@ -8,7 +8,7 @@ import (
 type User struct {
 	gorm.Model
 
-	Line            string `gorm:"primaryKey"` //line userID
+	Line            string `gorm:"primaryKey;unique"` //line userID
 	LineAccessToken string //for notify usage
 
 	Subscriptions []Subscription `gorm:"foreignKey:Line;references:Line"`
