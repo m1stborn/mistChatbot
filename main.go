@@ -92,7 +92,7 @@ func main() {
 	for _, streamer := range testStreamer {
 		twitch.CreateStreamOnlineSubscription(streamer, "/twitch/streamOnline")
 		model.DB.CreateSubscription(&model.Subscription{
-			LineUser:        testLine,
+			Line:            testLine,
 			LineAccessToken: testAccessToken,
 			TwitchLoginName: streamer,
 		})
