@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
-	"github.com/m1stborn/mistChatbot/internal/pkg/line"
 	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 
 	"github.com/nicklaw5/helix"
@@ -62,7 +62,7 @@ func EventSubFollow(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write([]byte("ok"))
 
-	//line.SendNotify(testAccessToken,
+	//SendLineNotify(testAccessToken,
 	//	fmt.Sprintf("%s follows %s!",
 	//		followEvent.UserName,
 	//		followEvent.BroadcasterUserName))
@@ -117,10 +117,36 @@ func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
 	accessTokens := model.DB.QuerySubByTwitchLoginName(streamOnlineEvent.BroadcasterUserLogin)
 
 	for _, token := range accessTokens {
-		line.SendNotify(token,
+		SendLineNotify(token,
 			fmt.Sprintf("%s start streaming!\n https://www.twitch.tv/%s",
 				streamOnlineEvent.BroadcasterUserName,
 				streamOnlineEvent.BroadcasterUserLogin))
 	}
 
+}
+
+const notifyAPIHost string = "https://notify-api.line.me"
+
+func SendLineNotify(accessToken string, message string) {
+	uri := "/api/notify"
+	queryStr := url.Values{}
+	queryStr.Add("message", message)
+	encodeQueryStr := queryStr.Encode()
+	pr, httpErr := http.NewRequest("POST", notifyAPIHost+uri, bytes.NewBufferString(encodeQueryStr))
+	pr.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	pr.Header.Set("Authorization", "Bearer "+accessToken)
+	client := &http.Client{}
+	r, httpErr := client.Do(pr)
+	if httpErr != nil {
+		log.WithError(httpErr).Error("Notify Request Failed")
+		return
+	}
+	defer r.Body.Close()
+	if r.StatusCode != http.StatusOK {
+		data, _ := ioutil.ReadAll(r.Body)
+		logger.WithFields(log.Fields{
+			"status":   r.Status,
+			"response": string(data),
+		}).Error("LINE Notify Failed")
+	}
 }
