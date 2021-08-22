@@ -21,7 +21,7 @@ type TwitchClient struct {
 
 var (
 	twitchClientID    = os.Getenv("TWITCH_CLIENT_ID")
-	twitchAccessToken = os.Getenv("TWITCH_ACCESSED")
+	twitchAccessToken = os.Getenv("TWITCH_ACCESSTOKEN")
 	secretWord        = "s3cre7w0rd"
 
 	callbackUrl = os.Getenv("CALLBACK_URL")
@@ -41,6 +41,7 @@ func init() {
 	TC.Client = cl
 	TC.CallbackUrl = callbackUrl
 	TC.SecretWord = secretWord
+	logger.Info("init twitch success")
 }
 
 func GetSubscriptions() (idList []string) {
@@ -179,7 +180,8 @@ func GetUsersID(usernameList []string) (idList []string) {
 		}
 
 		logger.WithFields(log.Fields{
-			"func": "GetUsersID",
+			"func":   "GetUsersID",
+			"idList": usernameList,
 		}).Infof(fmt.Sprintf("User ID List: %+v", idList))
 	}
 
