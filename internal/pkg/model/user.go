@@ -48,3 +48,30 @@ func (d *Database) UpdateUser(user *User) {
 		"func": "UpdateUser",
 	}).Info("Update User Success")
 }
+
+func (d *Database) CheckLineAccessTokenExist(accountID string) bool {
+	var user User
+	if err := d.db.First(&user, "line = ?", accountID).Error; err != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "CheckUserLineAccessToken",
+		}).Error(err)
+		return false
+	}
+	if user.LineAccessToken != "" {
+		return false
+	}
+	return true
+}
+
+func (d *Database) GetUser(accountID string) *User {
+	var user User
+	if err := d.db.First(&user, "line = ?", accountID).Error; err != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "GetUser",
+		}).Error(err)
+		return nil
+	}
+	return &user
+}

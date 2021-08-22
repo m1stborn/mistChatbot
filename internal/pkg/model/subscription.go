@@ -68,3 +68,16 @@ func (d *Database) QuerySubByTwitchLoginName(twitchLoginName string) []string {
 
 	return subsIDList
 }
+
+func (d *Database) CheckStreamerExist(twitchLoginName string) bool {
+	var sub Subscription
+	if err := d.db.First(&sub, "TwitchLoginName = ?", twitchLoginName); err != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "CheckStreamerExist",
+		}).Error(err)
+		return false
+	}
+
+	return true
+}

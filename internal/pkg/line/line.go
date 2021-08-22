@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/m1stborn/mistChatbot/internal/pkg/command"
+	"github.com/m1stborn/mistChatbot/internal/pkg/model"
+
 	"github.com/line/line-bot-sdk-go/linebot"
 	log "github.com/sirupsen/logrus"
 )
@@ -43,22 +46,40 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		switch event.Type {
 		case linebot.EventTypeMessage:
 			handleMessage(event)
+		case linebot.EventTypeFollow:
+			//TODO handleFollow(event)
 		}
+
 	}
 }
 
 func handleMessage(event *linebot.Event) {
-	//var responseText string
+	var responseText string
 	//var lineMsg []linebot.SendingMessage
 	accountID, accountType := getAccountIDAndType(event)
 
 	switch message := event.Message.(type) {
 	case *linebot.TextMessage:
-		//currently echo bot
-		if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
-			logger.WithField("func", "handleMessage").Error(err.Error())
+		//TODO handleFollow to ensure user exist in database
+		user := model.DB.GetUser(accountID)
+		//if !model.DB.CheckLineAccessTokenExist(accountID) {
+		if user.LineAccessToken == "" {
+			//TODO currently echo with not register user
+			//if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("not connect with line notify")).Do() err != nil {
+			if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
+				logger.WithField("func", "handleMessage").Error(err.Error())
+			}
 			return
 		}
+
+		responseText = command.HandleCommand(message.Text, user, true)
+
+		if responseText != "" {
+			if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(responseText)).Do(); err != nil {
+				logger.WithField("func", "handleMessage").Error(err.Error())
+			}
+		}
+
 		logger.WithFields(log.Fields{
 			"func":        "handleMessage",
 			"lineID":      accountID,

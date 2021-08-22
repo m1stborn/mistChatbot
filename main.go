@@ -11,23 +11,12 @@ import (
 	"github.com/m1stborn/mistChatbot/internal/pkg/twitchmod"
 
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/nicklaw5/helix"
 )
 
+var err error
+
 var (
-	//lineSecretToken = os.Getenv("LINE_CHANNEL_SECRET")
-	//lineAccessToken = os.Getenv("LINE_CHANNEL_ACCESSTOKEN")
-
-	twitchClientID    = os.Getenv("TWITCH_CLIENT_ID")
-	twitchAccessToken = os.Getenv("TWITCH_ACCESSTOKEN")
-	secretWord        = "s3cre7w0rd"
-
-	callbackUrl = os.Getenv("CALLBACK_URL")
-	port        = ":" + os.Getenv("PORT")
-
-	//lineClient *linebot.Client
-	//err        error
-
+	port  = ":" + os.Getenv("PORT")
 	dbUri = os.Getenv("DB_URI")
 
 	testStreamer    = []string{"muse_tw", "lck", "dogdog", "lolpacifictw", "m989876525", "qq7925168", "never_loses"}
@@ -39,23 +28,6 @@ var (
 		LineAccessToken: testAccessToken,
 	}
 )
-
-func nweTwitch() twitchmod.TwitchClient {
-	cl, clErr := helix.NewClient(&helix.Options{
-		ClientID:       twitchClientID,
-		AppAccessToken: twitchAccessToken,
-	})
-	//TODO integrate logging and handle error
-	if clErr != nil {
-		fmt.Println()
-	}
-	twitch := twitchmod.TwitchClient{
-		Client:      cl,
-		CallbackUrl: callbackUrl,
-		SecretWord:  secretWord,
-	}
-	return twitch
-}
 
 func main() {
 	//step 1: init Line Client
@@ -79,23 +51,27 @@ func main() {
 	http.HandleFunc("/twitch/streamOnline", twitchmod.EventSubStreamOnline)
 
 	//step 2: init Twitch Client
-	twitch := nweTwitch()
+	//twitch := nweTwitch()
 
 	//step 2.0: delete old subscription during develop and testing
-	subIds := twitch.GetSubscriptions()
-	twitch.DeleteSubscriptions(subIds)
+	subIds := twitchmod.GetSubscriptions()
+	twitchmod.DeleteSubscriptions(subIds)
 
 	//step 2.1: Create Event subscriptions
-	twitch.CreateChannelFollowSubscription("twitch", "/twitch/channelFollow")
-	twitch.CreateStreamOnlineSubscription("twitch", "/twitch/streamOnline")
+	err = twitchmod.CreateChannelFollowSubscription("twitch", "/twitch/channelFollow")
+	err = twitchmod.CreateStreamOnlineSubscription("twitch", "/twitch/streamOnline")
 
 	for _, streamer := range testStreamer {
-		twitch.CreateStreamOnlineSubscription(streamer, "/twitch/streamOnline")
+		err = twitchmod.CreateStreamOnlineSubscription(streamer, "/twitch/streamOnline")
 		model.DB.CreateSubscription(&model.Subscription{
 			Line:            testLine,
 			LineAccessToken: testAccessToken,
 			TwitchLoginName: streamer,
 		})
+	}
+
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	//step 3: start up our webhook server

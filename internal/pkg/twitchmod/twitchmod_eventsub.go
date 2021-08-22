@@ -14,8 +14,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//var testAccessToken = os.Getenv("LINE_NOTIFY_ACCESSTOKEN")
-
 type EventSubNotification struct {
 	Subscription helix.EventSubSubscription `json:"subscription"`
 	Challenge    string                     `json:"challenge"`
@@ -36,7 +34,7 @@ func EventSubFollow(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 	// verify that the notification came from twitch using the secret.
-	if !helix.VerifyEventSubNotification("s3cre7w0rd", r.Header, string(body)) {
+	if !helix.VerifyEventSubNotification(secretWord, r.Header, string(body)) {
 		logger.WithField("func", "EventSubFollow").Info("no valid signature on subscription")
 		return
 	} else {
@@ -85,7 +83,7 @@ func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 	// verify that the notification came from twitch using the secret.
-	if !helix.VerifyEventSubNotification("s3cre7w0rd", r.Header, string(body)) {
+	if !helix.VerifyEventSubNotification(secretWord, r.Header, string(body)) {
 		logger.WithField("func", "EventSubStreamOnline").Info("no valid signature on subscription")
 		return
 	} else {
