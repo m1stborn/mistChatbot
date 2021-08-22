@@ -25,7 +25,7 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 	switch command {
 	case "/sub":
 		//step 0: regex match command
-		re := regexp.MustCompile("^(/sub)\\s(^[a-zA-Z0-9_]{4,25}$)")
+		re := regexp.MustCompile("^(/sub)\\s([a-zA-Z0-9_]{4,25}$)")
 		if matched := re.MatchString(text); !matched {
 			//TODO handle reply message
 			return "wrong format of command"
