@@ -1,8 +1,11 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Database struct {
@@ -19,26 +22,77 @@ var DB = Database{}
 //	return Database{db}
 //}
 
+func (d *Database) TestInit(uri string) {
+	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
+	if err != nil {
+		//TODO handle error
+		fmt.Println(err)
+	}
+
+	d.db = db
+
+	if dropErr := d.db.Migrator().DropTable(&Subscription{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
+	if dropErr := d.db.Migrator().DropTable(&User{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
+
+	//create all the table
+	if !d.db.Migrator().HasTable(&User{}) {
+		err = d.db.Migrator().CreateTable(&User{})
+	} else {
+		err = d.db.Migrator().AutoMigrate(&User{})
+	}
+
+	if !d.db.Migrator().HasTable(&Subscription{}) {
+		err = d.db.Migrator().CreateTable(&Subscription{})
+	} else {
+		err = d.db.Migrator().AutoMigrate(&Subscription{})
+	}
+
+}
+
 func (d *Database) Init(uri string) {
 
-	db, err := gorm.Open("postgres", uri)
+	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
 	if err != nil {
 		//TODO handle error
 	}
 
 	d.db = db
 
-	//create all the table
-	if !d.db.HasTable(&User{}) {
-		err = d.db.CreateTable(&User{}).Error
-	} else {
-		err = d.db.AutoMigrate(&User{}).Error
+	//drop old table
+	if dropErr := d.db.Migrator().DropTable(&Subscription{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
+	if dropErr := d.db.Migrator().DropTable(&User{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
 	}
 
-	if !d.db.HasTable(&Subscription{}) {
-		err = d.db.CreateTable(&Subscription{}).Error
+	//create all the table
+	if !d.db.Migrator().HasTable(&User{}) {
+		err = d.db.Migrator().CreateTable(&User{})
 	} else {
-		err = d.db.AutoMigrate(&Subscription{}).Error
+		err = d.db.Migrator().AutoMigrate(&User{})
+	}
+
+	if !d.db.Migrator().HasTable(&Subscription{}) {
+		err = d.db.Migrator().CreateTable(&Subscription{})
+	} else {
+		err = d.db.Migrator().AutoMigrate(&Subscription{})
 	}
 
 }

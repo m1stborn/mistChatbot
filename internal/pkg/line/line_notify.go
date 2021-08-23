@@ -6,9 +6,7 @@ import (
 	"errors"
 	"fmt"
 	ht "html/template"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"sort"
 	"strconv"
@@ -17,7 +15,6 @@ import (
 )
 
 const notifyBotHost string = "https://notify-bot.line.me"
-const notifyAPIHost string = "https://notify-api.line.me"
 
 var (
 	params       map[string]string
@@ -115,28 +112,4 @@ func HandleNotifyCallback(w http.ResponseWriter, r *http.Request) {
 		"lineID":      lineID,
 		"accessToken": accessToken,
 	}).Info("Successfully register user!")
-}
-
-func SendNotify(accessToken string, message string) {
-	uri := "/api/notify"
-	queryStr := url.Values{}
-	queryStr.Add("message", message)
-	encodeQueryStr := queryStr.Encode()
-	pr, httpErr := http.NewRequest("POST", notifyAPIHost+uri, bytes.NewBufferString(encodeQueryStr))
-	pr.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	pr.Header.Set("Authorization", "Bearer "+accessToken)
-	client := &http.Client{}
-	r, httpErr := client.Do(pr)
-	if httpErr != nil {
-		log.WithError(httpErr).Error("Notify Request Failed")
-		return
-	}
-	defer r.Body.Close()
-	if r.StatusCode != http.StatusOK {
-		data, _ := ioutil.ReadAll(r.Body)
-		logger.WithFields(log.Fields{
-			"status":   r.Status,
-			"response": string(data),
-		}).Error("LINE Notify Failed")
-	}
 }

@@ -1,4 +1,4 @@
-package model
+package command
 
 import (
 	log "github.com/sirupsen/logrus"

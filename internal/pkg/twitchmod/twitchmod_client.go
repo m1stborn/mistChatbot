@@ -2,6 +2,9 @@ package twitchmod
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 
@@ -16,22 +19,33 @@ type TwitchClient struct {
 	twitchAccessToken string
 }
 
-//var Twitch = TwitchClient{}
-//
-//func init() {
-//	var err error
-//	Twitch.client, err = helix.NewClient(&helix.Options{
-//		ClientID:       twitchClientID,
-//		AppAccessToken: twitchAccessToken,
-//	})
-//	if err != nil {
-//		//handle error
-//	}
-//	Twitch.callbackUrl = "https://red-panda-59.loca.lt" + "/callback"
-//}
+var (
+	twitchClientID    = os.Getenv("TWITCH_CLIENT_ID")
+	twitchAccessToken = os.Getenv("TWITCH_ACCESSTOKEN")
+	secretWord        = "s3cre7w0rd"
 
-func (c *TwitchClient) GetSubscriptions() (idList []string) {
-	resp, err := c.Client.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
+	callbackUrl = os.Getenv("CALLBACK_URL")
+)
+
+var TC = TwitchClient{}
+
+func init() {
+	cl, clErr := helix.NewClient(&helix.Options{
+		ClientID:       twitchClientID,
+		AppAccessToken: twitchAccessToken,
+	})
+	//TODO integrate logging and handle error
+	if clErr != nil {
+		fmt.Println()
+	}
+	TC.Client = cl
+	TC.CallbackUrl = callbackUrl
+	TC.SecretWord = secretWord
+	logger.Info("init twitch success")
+}
+
+func GetSubscriptions() (idList []string) {
+	resp, err := TC.Client.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
 		Status: helix.EventSubStatusEnabled, // This is optional
 	})
 
@@ -63,11 +77,14 @@ func (c *TwitchClient) GetSubscriptions() (idList []string) {
 	return idList //return current eventSubscriptions id
 }
 
-func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, route string) {
-	idList := c.GetUsersID([]string{broadcasterName})
+func CreateChannelFollowSubscription(broadcasterName string, route string) error {
+	idList := GetUsersID([]string{broadcasterName})
+	if len(idList) == 0 {
+		return errors.New("streamer doesn't exist")
+	}
 	id := idList[0]
 
-	resp, err := c.Client.CreateEventSubSubscription(&helix.EventSubSubscription{
+	resp, err := TC.Client.CreateEventSubSubscription(&helix.EventSubSubscription{
 		Type:    helix.EventSubTypeChannelFollow,
 		Version: "1",
 		Condition: helix.EventSubCondition{
@@ -75,27 +92,32 @@ func (c *TwitchClient) CreateChannelFollowSubscription(broadcasterName string, r
 		},
 		Transport: helix.EventSubTransport{
 			Method:   "webhook",
-			Callback: c.CallbackUrl + route,
-			Secret:   c.SecretWord,
+			Callback: TC.CallbackUrl + route,
+			Secret:   TC.SecretWord,
 		},
 	})
 
 	if err != nil {
 		logger.WithField("func", "CreateChannelFollowSubscription").Error(err.Error())
+		return err
 	}
 	if resp != nil {
 		//TODO: logging whole response?
 		logger.WithFields(log.Fields{
 			"func": "CreateChannelFollowSubscription",
-		}).Infof(fmt.Sprintf("broadcaster ID: %+v", id))
+		}).Infof(fmt.Sprintf("broadcaster ID: %+v, Streamer: %+v", id, broadcasterName))
 	}
+	return nil
 }
 
-func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, route string) {
-	idList := c.GetUsersID([]string{broadcasterName})
+func CreateStreamOnlineSubscription(broadcasterName string, route string) error {
+	idList := GetUsersID([]string{broadcasterName})
+	if len(idList) == 0 {
+		return errors.New("streamer doesn't exist")
+	}
 	id := idList[0]
 
-	resp, err := c.Client.CreateEventSubSubscription(&helix.EventSubSubscription{
+	resp, err := TC.Client.CreateEventSubSubscription(&helix.EventSubSubscription{
 		Type:    helix.EventSubTypeStreamOnline,
 		Version: "1",
 		Condition: helix.EventSubCondition{
@@ -103,26 +125,27 @@ func (c *TwitchClient) CreateStreamOnlineSubscription(broadcasterName string, ro
 		},
 		Transport: helix.EventSubTransport{
 			Method:   "webhook",
-			Callback: c.CallbackUrl + route,
-			Secret:   c.SecretWord,
+			Callback: TC.CallbackUrl + route,
+			Secret:   TC.SecretWord,
 		},
 	})
 
 	if err != nil {
 		logger.WithField("func", "CreateStreamOnlineSubscription").Error(err.Error())
+		return err
 	}
 	if resp != nil {
 		//TODO: logging whole response?
 		logger.WithFields(log.Fields{
 			"func": "CreateStreamOnlineSubscription",
-		}).Infof(fmt.Sprintf("broadcaster ID: %+v", id))
-
+		}).Infof(fmt.Sprintf("broadcaster ID: %+v, Streamer: %+v", id, broadcasterName))
 	}
+	return nil
 }
 
-func (c *TwitchClient) DeleteSubscriptions(idList []string) {
+func DeleteSubscriptions(idList []string) {
 	for _, id := range idList {
-		deleteResp, deleteErr := c.Client.RemoveEventSubSubscription(id)
+		deleteResp, deleteErr := TC.Client.RemoveEventSubSubscription(id)
 
 		if deleteErr != nil {
 			logger.WithField("func", "DeleteSubscriptions").Error(deleteErr.Error())
@@ -135,8 +158,8 @@ func (c *TwitchClient) DeleteSubscriptions(idList []string) {
 	}
 }
 
-func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
-	userResp, userErr := c.Client.GetUsers(&helix.UsersParams{
+func GetUsersID(usernameList []string) (idList []string) {
+	userResp, userErr := TC.Client.GetUsers(&helix.UsersParams{
 		//example usage
 		//IDs:    []string{"twitch user id"},
 		//Logins: []string{"twitch user name"},
@@ -157,9 +180,19 @@ func (c *TwitchClient) GetUsersID(usernameList []string) (idList []string) {
 		}
 
 		logger.WithFields(log.Fields{
-			"func": "GetUsersID",
+			"func":   "GetUsersID",
+			"idList": usernameList,
 		}).Infof(fmt.Sprintf("User ID List: %+v", idList))
 	}
 
 	return idList
+}
+
+func CheckStreamerExist(broadcasterName string) bool {
+	idList := GetUsersID([]string{broadcasterName})
+	if len(idList) == 0 {
+		//return errors.New("streamer doesn't exist"
+		return false
+	}
+	return true
 }
