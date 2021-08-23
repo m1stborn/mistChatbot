@@ -59,7 +59,7 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		return fmt.Sprintf("sub %v successful!", streamerName)
 	case "/del":
 		//step 0: regex match command
-		re := regexp.MustCompile("^(/sub)\\s([a-zA-Z0-9_]{4,25}$)")
+		re := regexp.MustCompile("^(/del)\\s([a-zA-Z0-9_]{4,25}$)")
 		if matched := re.MatchString(text); !matched {
 			//TODO handle reply message
 			return "Wrong format of command"
@@ -85,6 +85,7 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		for _, sub := range subs {
 			resp += fmt.Sprintf("https://www.twitch.tv/%s\n", sub.TwitchLoginName)
 		}
+		return resp
 	}
 	return "No this command, please check /help"
 }
