@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
@@ -14,6 +15,7 @@ type Subscription struct {
 	LineAccessToken string //line notify access token
 
 	TwitchLoginName string
+	//TODO TwitchEventSubID
 }
 
 func (d *Database) CreateSubscription(sub *Subscription) {
@@ -71,7 +73,7 @@ func (d *Database) QuerySubByTwitchLoginName(twitchLoginName string) []string {
 
 func (d *Database) CheckStreamerExist(twitchLoginName string) bool {
 	var sub Subscription
-	if err := d.db.First(&sub, "twitch_login_name = ?", twitchLoginName); err != nil {
+	if err := d.db.First(&sub, "twitch_login_name = ?", twitchLoginName).Error; err != nil {
 		logger.WithFields(log.Fields{
 			"pkg":  "model",
 			"func": "CheckStreamerExist",
@@ -80,4 +82,38 @@ func (d *Database) CheckStreamerExist(twitchLoginName string) bool {
 	}
 
 	return true
+}
+
+func (d *Database) QuerySubByUser(accountID string) []Subscription {
+	var subs []Subscription
+	if err := d.db.Where(&Subscription{Line: accountID}).Find(&subs).Error; err != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "QuerySubByUser",
+		}).Error(err)
+	}
+
+	//logger.WithFields(log.Fields{
+	//	"pkg":  "model",
+	//	"func": "QuerySubByUser",
+	//}).Infof(fmt.Sprintf("Query Result: %+v", ))
+
+	return subs
+}
+
+var ErrRecordNotExist = errors.New("wrong streamer name or not sub yet")
+
+func (d *Database) DeleteSubByUserBroadcaster(accountID string, broadcaster string) error {
+	var sub Subscription
+	result := d.db.Where(&Subscription{Line: accountID, TwitchLoginName: broadcaster}).Unscoped().Delete(&sub)
+	if result.Error != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "DeleteSubByUserBroadcaster",
+		}).Error(result.Error)
+		return result.Error
+	} else if result.RowsAffected < 1 {
+		return ErrRecordNotExist
+	}
+	return nil
 }

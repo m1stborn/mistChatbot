@@ -28,14 +28,14 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		re := regexp.MustCompile("^(/sub)\\s([a-zA-Z0-9_]{4,25}$)")
 		if matched := re.MatchString(text); !matched {
 			//TODO handle reply message
-			return "wrong format of command"
+			return "Wrong format of command"
 		}
 		args := re.FindStringSubmatch(text)
 		streamerName := args[2]
 
 		//step 1: check if the broadcaster exist
 		if !twitchmod.CheckStreamerExist(streamerName) {
-			return "streamer not exist"
+			return "Streamer not exist"
 		}
 		//step 2: check if already sub to twitch EventSub
 		if !model.DB.CheckStreamerExist(streamerName) {
@@ -49,6 +49,7 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 			Line:            user.Line,
 			LineAccessToken: user.LineAccessToken,
 			TwitchLoginName: streamerName,
+			//TODO TwitchEventSubID
 		})
 		logger.WithFields(log.Fields{
 			"pkg":  "command",
@@ -56,7 +57,34 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 			"func": "HandleCommand",
 		}).Info("sub success")
 		return fmt.Sprintf("sub %v successful!", streamerName)
+	case "/del":
+		//step 0: regex match command
+		re := regexp.MustCompile("^(/sub)\\s([a-zA-Z0-9_]{4,25}$)")
+		if matched := re.MatchString(text); !matched {
+			//TODO handle reply message
+			return "Wrong format of command"
+		}
+		args := re.FindStringSubmatch(text)
+		streamerName := args[2]
+		//step 1: delete DB record
+		err := model.DB.DeleteSubByUserBroadcaster(user.Line, streamerName)
+		if err == model.ErrRecordNotExist {
+			return "Wrong streamer name or not sub yet "
+		}
+		//step 2: check if should remove eventSub from twitch
+		if !model.DB.CheckStreamerExist(streamerName) {
+			//TODO TwitchEventSubID
+		}
+		return fmt.Sprintf("delete %v successful!", streamerName)
+	case "/list":
+		subs := model.DB.QuerySubByUser(user.Line)
+		if len(subs) == 0 {
+			return "You haven't subscribe any channel!"
+		}
+		resp := "Currently subs:\n"
+		for _, sub := range subs {
+			resp += fmt.Sprintf("https://www.twitch.tv/%s\n", sub.TwitchLoginName)
+		}
 	}
-	//case "/del":
-	return "no this command, please check /help"
+	return "No this command, please check /help"
 }

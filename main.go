@@ -30,11 +30,6 @@ var (
 )
 
 func main() {
-	//step 1: init Line Client
-	//lineClient, err = linebot.New(lineSecretToken, lineAccessToken)
-	//if err != nil {
-	//	log.Println(err.Error())
-	//}
 
 	//step 1: init DB
 	model.DB.Init(dbUri)

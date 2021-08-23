@@ -54,7 +54,7 @@ func (d *Database) CheckLineAccessTokenExist(accountID string) bool {
 	if err := d.db.First(&user, "line = ?", accountID).Error; err != nil {
 		logger.WithFields(log.Fields{
 			"pkg":  "model",
-			"func": "CheckUserLineAccessToken",
+			"func": "CheckLineAccessTokenExist",
 		}).Error(err)
 		return false
 	}

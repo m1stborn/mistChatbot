@@ -22,10 +22,10 @@ type EventSubNotification struct {
 
 func EventSubFollow(w http.ResponseWriter, r *http.Request) {
 
-	logger.WithFields(log.Fields{
-		"func":   "EventSubFollow",
-		"method": r.Method,
-	})
+	//logger.WithFields(log.Fields{
+	//	"func":   "EventSubFollow",
+	//	"method": r.Method,
+	//})
 
 	body, errF := ioutil.ReadAll(r.Body)
 	if errF != nil {
@@ -71,10 +71,10 @@ func EventSubFollow(w http.ResponseWriter, r *http.Request) {
 
 func EventSubStreamOnline(w http.ResponseWriter, r *http.Request) {
 
-	logger.WithFields(log.Fields{
-		"func":   "EventSubStreamOnline",
-		"method": r.Method,
-	})
+	//logger.WithFields(log.Fields{
+	//	"func":   "EventSubStreamOnline",
+	//	"method": r.Method,
+	//})
 
 	body, errF := ioutil.ReadAll(r.Body)
 	if errF != nil {
