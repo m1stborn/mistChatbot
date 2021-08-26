@@ -117,3 +117,20 @@ func (d *Database) DeleteSubByUserBroadcaster(accountID string, broadcaster stri
 	}
 	return nil
 }
+
+func (d *Database) DeleteSubUserUnfollow(accountID string) {
+	var sub Subscription
+	result := d.db.Where(&Subscription{Line: accountID}).Unscoped().Delete(&sub)
+	if result.Error != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "DeleteSubUserUnfollow",
+		}).Error(result.Error)
+	} //no need to handle if user not sub anything
+
+	logger.WithFields(log.Fields{
+		"pkg":  "model",
+		"func": "DeleteSubUserUnfollow",
+	}).Info("Delete User's sub success")
+
+}

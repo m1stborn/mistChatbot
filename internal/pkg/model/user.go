@@ -12,6 +12,7 @@ type User struct {
 	LineAccessToken string //for notify usage
 
 	Subscriptions []Subscription `gorm:"foreignKey:Line;references:Line"`
+	Enable        bool           `gorm:"default:true"`
 
 	//Type    string //`json:"type,omitempty"`
 	//Email   string //`json:"email"`
@@ -31,7 +32,7 @@ func (d *Database) CreateUser(user *User) {
 	logger.WithFields(log.Fields{
 		"pkg":  "model",
 		"func": "CreateUser",
-	}).Info("Create User Success")
+	}).Info("Create user success")
 }
 
 func (d *Database) UpdateUser(user *User) {
@@ -46,7 +47,7 @@ func (d *Database) UpdateUser(user *User) {
 	logger.WithFields(log.Fields{
 		"pkg":  "model",
 		"func": "UpdateUser",
-	}).Info("Update User Success")
+	}).Info("Update user success")
 }
 
 func (d *Database) CheckLineAccessTokenExist(accountID string) bool {
@@ -74,4 +75,35 @@ func (d *Database) GetUser(accountID string) *User {
 		return nil
 	}
 	return &user
+}
+
+func (d *Database) UserUnfollow(accountID string) {
+	result := d.db.Model(&User{}).Where("line = ?", accountID).Update("enable", false)
+	if result.Error != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "UserUnfollow",
+		}).Error(result.Error)
+		return
+	} else if result.RowsAffected < 1 {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "UserUnfollow",
+		}).Info("No user updated")
+		return
+	}
+
+	return
+}
+
+func (d *Database) UserConnectNotify(accountID string, accessToken string) error {
+	result := d.db.Model(&User{}).Where("line = ?", accountID).Update("line_access_token", accessToken)
+	if result.Error != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "UserConnectNotify",
+		}).Error(result.Error)
+		return result.Error
+	}
+	return nil
 }

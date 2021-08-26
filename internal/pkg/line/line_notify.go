@@ -6,10 +6,16 @@ import (
 	"errors"
 	"fmt"
 	ht "html/template"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"sort"
 	"strconv"
+
+	"github.com/line/line-bot-sdk-go/linebot"
+
+	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -107,9 +113,48 @@ func HandleNotifyCallback(w http.ResponseWriter, r *http.Request) {
 		logger.WithError(tokenErr).Error("Fetch Access Token Failed")
 	}
 
+	dbErr := model.DB.UserConnectNotify(lineID, accessToken)
+	if dbErr != nil {
+		SendLineNotify(accessToken, "連結 LINE Notify 失敗")
+	} else {
+		//SendLineNotify(accessToken, "連結 LINE Notify 成功, 請回到 mistChatbot 輸入 /help 查看相關功能!")
+		if _, err = bot.PushMessage(lineID, linebot.NewTextMessage("連結 LINE Notify 成功, 輸入 /help 查看相關功能!")).Do(); err != nil {
+			logger.WithFields(log.Fields{
+				"func":   "HandleNotifyCallback",
+				"lineID": lineID,
+			}).Error(err)
+		}
+	}
+
 	logger.WithFields(log.Fields{
-		"func":        "CatchCallback",
+		"func":        "HandleNotifyCallback",
 		"lineID":      lineID,
 		"accessToken": accessToken,
 	}).Info("Successfully register user!")
+}
+
+const notifyAPIHost string = "https://notify-api.line.me"
+
+func SendLineNotify(accessToken string, message string) {
+	uri := "/api/notify"
+	queryStr := url.Values{}
+	queryStr.Add("message", message)
+	encodeQueryStr := queryStr.Encode()
+	pr, httpErr := http.NewRequest("POST", notifyAPIHost+uri, bytes.NewBufferString(encodeQueryStr))
+	pr.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	pr.Header.Set("Authorization", "Bearer "+accessToken)
+	client := &http.Client{}
+	r, httpErr := client.Do(pr)
+	if httpErr != nil {
+		log.WithError(httpErr).Error("Notify Request Failed")
+		return
+	}
+	defer r.Body.Close()
+	if r.StatusCode != http.StatusOK {
+		data, _ := ioutil.ReadAll(r.Body)
+		logger.WithFields(log.Fields{
+			"status":   r.Status,
+			"response": string(data),
+		}).Error("LINE Notify Failed")
+	}
 }
