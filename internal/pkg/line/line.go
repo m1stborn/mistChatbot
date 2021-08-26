@@ -106,10 +106,17 @@ func handleUnfollow(event *linebot.Event) {
 
 func handleFollow(event *linebot.Event) {
 	accountID, _ := getAccountIDAndType(event)
-	model.DB.CreateUser(&model.User{
-		Line: accountID,
-	})
-	text := fmt.Sprintf("請至以下網址連動LINE NOTIFY與mistChatbot:\n,%s", callbackUrl+"/line/notify/auth")
+
+	user := model.DB.GetUser(accountID)
+	if user == nil {
+		model.DB.CreateUser(&model.User{
+			Line: accountID,
+		})
+	}
+
+	url := getAuthorizeURL(accountID)
+	//text := fmt.Sprintf("請至以下網址連動LINE NOTIFY與mistChatbot:\n,%s", callbackUrl+"/line/notify/auth")
+	text := fmt.Sprintf("請至以下網址連動LINE NOTIFY與mistChatbot:\n,%s", url)
 	_, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do()
 	if err != nil {
 		logger.WithFields(log.Fields{
