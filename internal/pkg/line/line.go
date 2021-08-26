@@ -108,7 +108,10 @@ func handleFollow(event *linebot.Event) {
 	accountID, _ := getAccountIDAndType(event)
 
 	user := model.DB.GetUser(accountID)
-	if user == nil {
+	if user != nil {
+		user.Enable = true
+		model.DB.UpdateUser(user)
+	} else {
 		model.DB.CreateUser(&model.User{
 			Line: accountID,
 		})
