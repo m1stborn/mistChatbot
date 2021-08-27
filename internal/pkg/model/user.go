@@ -16,8 +16,6 @@ type User struct {
 
 	//Type    string //`json:"type,omitempty"`
 	//Email   string //`json:"email"`
-
-	//Subscribes []string `json:"Subscribes"`
 }
 
 func (d *Database) CreateUser(user *User) {

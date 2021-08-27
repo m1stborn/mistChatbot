@@ -63,9 +63,7 @@ func handleMessage(event *linebot.Event) {
 
 	switch message := event.Message.(type) {
 	case *linebot.TextMessage:
-		//TODO handleFollow to ensure user exist in database
 		user := model.DB.GetUser(accountID)
-		//if !model.DB.CheckLineAccessTokenExist(accountID) {
 		if user.LineAccessToken == "" {
 			//TODO currently echo with not register user
 			//if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("not connect with line notify")).Do() err != nil {

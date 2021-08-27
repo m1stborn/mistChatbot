@@ -14,14 +14,6 @@ type Database struct {
 
 var DB = Database{}
 
-//func NewDatabase(uri string) Database {
-//	db, err := gorm.Open("postgres", uri)
-//	if err != nil {
-//		//handle error
-//	}
-//	return Database{db}
-//}
-
 func (d *Database) TestInit(uri string) {
 	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
 	if err != nil {
