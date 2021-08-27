@@ -76,10 +76,10 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		}
 		return resp
 	case "/help":
-		return fmt.Sprint("指令清單\n" +
-			"/sub [twitch ID]:訂閱頻道\nExample: /sub never_loses" +
-			"/del [twitch ID]:刪除頻道\nExample: /sub qq7925168" +
-			"/list:列出訂閱的頻道")
+		return fmt.Sprint("指令清單:\n" +
+			"1./sub [twitch ID]: 訂閱頻道\n  Example: /sub never_loses\n" +
+			"2./del [twitch ID]: 刪除頻道\n  Example: /del qq7925168\n" +
+			"3./list: 列出訂閱的頻道")
 	}
 	return "No this command, please check /help"
 }
