@@ -28,27 +28,19 @@ func (d *Database) CreateUser(user *User) {
 			"func": "CreateUser",
 		}).Error(err)
 	}
-
-	logger.WithFields(log.Fields{
-		"pkg":  "model",
-		"func": "CreateUser",
-	}).Info("Create user success")
 }
 
 func (d *Database) UpdateUser(user *User) {
-	if err := d.db.Model(user).Select([]string{"line", "line_access_token"}).Updates(user).Error; err != nil {
+	if err := d.db.Model(user).Select([]string{"line", "line_access_token", "enable"}).Updates(user).Error; err != nil {
 		//TODO handle error
 		logger.WithFields(log.Fields{
 			"func": "UpdateUser",
 			"pkg":  "model",
 		}).Error(err)
 	}
-
-	logger.WithFields(log.Fields{
-		"pkg":  "model",
-		"func": "UpdateUser",
-	}).Info("Update user success")
 }
+
+//TODO　use GetUser instead of this function
 
 func (d *Database) CheckLineAccessTokenExist(accountID string) bool {
 	var user User
@@ -95,6 +87,8 @@ func (d *Database) UserUnfollow(accountID string) {
 
 	return
 }
+
+//TODO use UpdateUser instead of this function
 
 func (d *Database) UserConnectNotify(accountID string, accessToken string) error {
 	result := d.db.Model(&User{}).Where("line = ?", accountID).Update("line_access_token", accessToken)

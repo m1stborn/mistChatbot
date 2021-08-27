@@ -119,7 +119,7 @@ func handleFollow(event *linebot.Event) {
 
 	url := getAuthorizeURL(accountID)
 	//text := fmt.Sprintf("請至以下網址連動LINE NOTIFY與mistChatbot:\n,%s", callbackUrl+"/line/notify/auth")
-	text := fmt.Sprintf("請至以下網址連動LINE NOTIFY與mistChatbot:\n,%s", url)
+	text := fmt.Sprintf("請至以下網址連動LINE NOTIFY與mistChatbot:\n%s", url)
 	_, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do()
 	if err != nil {
 		logger.WithFields(log.Fields{
