@@ -10,9 +10,9 @@ A simple line chatbot that send notification to you through LINE notify when a s
 
 ## Basic Line command
 
-all the command start with "/"
-1. `/sub [twitch ID]`: subscribe a channel
+All the chatbot command starting with "/" :
+1. `/sub [twitch ID]` : subscribe a channel
    * example: /sub never_loses
-2. `/del [twitch ID]`: delete a channel
+2. `/del [twitch ID]` : delete a channel
    * example: /del qq7925168
 3. `/list` : list all the channel that you subscribe
