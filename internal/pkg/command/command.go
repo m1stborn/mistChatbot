@@ -5,15 +5,9 @@ import (
 	"regexp"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 	"github.com/m1stborn/mistChatbot/internal/pkg/twitchmod"
 )
-
-//func HandelLineFollow(id, accountType string) {
-//	//fmt.Println(model.TestUser)
-//}
 
 var streamOnlineRoute = "/twitch/streamOnline"
 
@@ -51,11 +45,6 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 			TwitchLoginName: streamerName,
 			//TODO TwitchEventSubID
 		})
-		logger.WithFields(log.Fields{
-			"pkg":  "command",
-			"case": "/sub",
-			"func": "HandleCommand",
-		}).Info("sub success")
 		return fmt.Sprintf("sub %v successful!", streamerName)
 	case "/del":
 		//step 0: regex match command
@@ -86,6 +75,12 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 			resp += fmt.Sprintf("https://www.twitch.tv/%s\n", sub.TwitchLoginName)
 		}
 		return resp
+	case "/help":
+		//TODO add  line emoji
+		return fmt.Sprint("指令清單:\n" +
+			"1. /sub [twitch ID]: 訂閱頻道\n   Example: /sub never_loses\n" +
+			"2. /del [twitch ID]: 刪除頻道\n   Example: /del qq7925168\n" +
+			"3. /list: 列出訂閱的頻道")
 	}
 	return "No this command, please check /help"
 }

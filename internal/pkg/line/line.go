@@ -1,6 +1,7 @@
 package line
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -47,7 +48,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		case linebot.EventTypeMessage:
 			handleMessage(event)
 		case linebot.EventTypeFollow:
-			//TODO handleFollow(event)
+			handleFollow(event)
+		case linebot.EventTypeUnfollow:
+			handleUnfollow(event)
 		}
 
 	}
@@ -60,9 +63,7 @@ func handleMessage(event *linebot.Event) {
 
 	switch message := event.Message.(type) {
 	case *linebot.TextMessage:
-		//TODO handleFollow to ensure user exist in database
 		user := model.DB.GetUser(accountID)
-		//if !model.DB.CheckLineAccessTokenExist(accountID) {
 		if user.LineAccessToken == "" {
 			//TODO currently echo with not register user
 			//if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("not connect with line notify")).Do() err != nil {
@@ -87,6 +88,48 @@ func handleMessage(event *linebot.Event) {
 		}).Infof("receive msg: %+v, ID: %+v", message.Text, message.ID)
 		return
 	}
+}
+
+func handleUnfollow(event *linebot.Event) {
+	accountID, _ := getAccountIDAndType(event)
+
+	model.DB.UserUnfollow(accountID)
+	model.DB.DeleteSubUserUnfollow(accountID)
+
+	logger.WithFields(log.Fields{
+		"func":   "HandleUnfollow",
+		"lineID": accountID,
+	}).Info("Line unfollow")
+}
+
+func handleFollow(event *linebot.Event) {
+	accountID, _ := getAccountIDAndType(event)
+
+	user := model.DB.GetUser(accountID)
+	if user != nil {
+		user.Enable = true
+		model.DB.UpdateUser(user)
+	} else {
+		model.DB.CreateUser(&model.User{
+			Line: accountID,
+		})
+	}
+
+	url := getAuthorizeURL(accountID)
+	//text := fmt.Sprintf("請至以下網址連動LINE NOTIFY與mistChatbot:\n,%s", callbackUrl+"/line/notify/auth")
+	text := fmt.Sprintf("請至以下網址連動LINE NOTIFY與mistChatbot:\n%s", url)
+	_, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do()
+	if err != nil {
+		logger.WithFields(log.Fields{
+			"func":   "handleFollow",
+			"lineID": accountID,
+		}).Error(err)
+		return
+	}
+	logger.WithFields(log.Fields{
+		"func":   "handleFollow",
+		"lineID": accountID,
+	}).Info("New Line Follow")
 }
 
 const (

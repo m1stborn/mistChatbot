@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"fmt"
 
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -26,11 +25,6 @@ func (d *Database) CreateSubscription(sub *Subscription) {
 			"func": "CreateSubscription",
 		}).Error(err)
 	}
-
-	logger.WithFields(log.Fields{
-		"pkg":  "model",
-		"func": "CreateSubscription",
-	}).Info("Create Subscription Success")
 }
 
 func (d *Database) UpdateSubscription(sub *Subscription) {
@@ -40,10 +34,6 @@ func (d *Database) UpdateSubscription(sub *Subscription) {
 			"func": "UpdateSubscription",
 		}).Error(err)
 	}
-	logger.WithFields(log.Fields{
-		"pkg":  "model",
-		"func": "UpdateSubscription",
-	}).Info("Update Subscription Success")
 }
 
 func (d *Database) QuerySubByTwitchLoginName(twitchLoginName string) []string {
@@ -62,12 +52,6 @@ func (d *Database) QuerySubByTwitchLoginName(twitchLoginName string) []string {
 	for _, sub := range subs {
 		subsIDList = append(subsIDList, sub.LineAccessToken)
 	}
-
-	logger.WithFields(log.Fields{
-		"pkg":  "model",
-		"func": "QuerySubByTwitchLoginName",
-	}).Infof(fmt.Sprintf("Query Result: %+v", subsIDList))
-
 	return subsIDList
 }
 
@@ -92,12 +76,6 @@ func (d *Database) QuerySubByUser(accountID string) []Subscription {
 			"func": "QuerySubByUser",
 		}).Error(err)
 	}
-
-	//logger.WithFields(log.Fields{
-	//	"pkg":  "model",
-	//	"func": "QuerySubByUser",
-	//}).Infof(fmt.Sprintf("Query Result: %+v", ))
-
 	return subs
 }
 
@@ -116,4 +94,16 @@ func (d *Database) DeleteSubByUserBroadcaster(accountID string, broadcaster stri
 		return ErrRecordNotExist
 	}
 	return nil
+}
+
+func (d *Database) DeleteSubUserUnfollow(accountID string) {
+	var sub Subscription
+	result := d.db.Where(&Subscription{Line: accountID}).Unscoped().Delete(&sub)
+	if result.Error != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "DeleteSubUserUnfollow",
+		}).Error(result.Error)
+	} //no need to handle if user not sub anything
+
 }

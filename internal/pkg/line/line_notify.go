@@ -6,10 +6,14 @@ import (
 	"errors"
 	"fmt"
 	ht "html/template"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"sort"
 	"strconv"
+
+	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -33,6 +37,20 @@ func buildQueryString(params map[string]string) (query string) {
 		query += fmt.Sprintf("%s=%s&", key, params[key])
 	}
 	return query
+}
+
+func getAuthorizeURL(lineID string) string {
+	var uri = "/oauth/authorize"
+	params = map[string]string{
+		"response_type": "code",
+		"client_id":     clientID,
+		"redirect_uri":  redirectURI,
+		"scope":         "notify",
+		"state":         lineID,
+		"response_mode": "form_post",
+	}
+	query := buildQueryString(params)
+	return fmt.Sprintf("%s%s?%s", notifyBotHost, uri, query)
 }
 
 //TODO: serve a frontend website
@@ -70,6 +88,8 @@ func fetchAccessToken(code string) (string, error) {
 	return rspBody.AccessToken, nil
 }
 
+//TODO legacy , now directly post url
+
 func HandelNotifyAuth(w http.ResponseWriter, r *http.Request) {
 	t, tErr := ht.New("webpage").Parse(authTmpl)
 	if tErr != nil {
@@ -98,18 +118,57 @@ func HandleNotifyCallback(w http.ResponseWriter, r *http.Request) {
 			"error":       r.FormValue("error"),
 			"state":       r.FormValue("state"),
 			"description": r.FormValue("error_description"),
-		}).Error("Get LINE Notify Callback Failed")
+		}).Info("Get LINE Notify Callback Failed")
 	}
 
 	code, lineID := r.FormValue("code"), r.FormValue("state")
 	accessToken, tokenErr := fetchAccessToken(code)
 	if tokenErr != nil {
-		logger.WithError(tokenErr).Error("Fetch Access Token Failed")
+		logger.WithError(tokenErr).Info("Fetch Access Token Failed")
+	}
+
+	dbErr := model.DB.UserConnectNotify(lineID, accessToken)
+	if dbErr != nil {
+		SendLineNotify(accessToken, "連結 LINE Notify 失敗")
+	} else {
+		SendLineNotify(accessToken, "連結 LINE Notify 成功, 請回到 mistChatbot 輸入 /help 查看相關功能!")
+		//if _, err = bot.PushMessage(lineID, linebot.NewTextMessage("連結 LINE Notify 成功, 輸入 /help 查看相關功能!")).Do(); err != nil {
+		//	logger.WithFields(log.Fields{
+		//		"func":   "HandleNotifyCallback",
+		//		"lineID": lineID,
+		//	}).Error(err)
+		//}
 	}
 
 	logger.WithFields(log.Fields{
-		"func":        "CatchCallback",
+		"func":        "HandleNotifyCallback",
 		"lineID":      lineID,
 		"accessToken": accessToken,
 	}).Info("Successfully register user!")
+}
+
+const notifyAPIHost string = "https://notify-api.line.me"
+
+func SendLineNotify(accessToken string, message string) {
+	uri := "/api/notify"
+	queryStr := url.Values{}
+	queryStr.Add("message", message)
+	encodeQueryStr := queryStr.Encode()
+	pr, httpErr := http.NewRequest("POST", notifyAPIHost+uri, bytes.NewBufferString(encodeQueryStr))
+	pr.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	pr.Header.Set("Authorization", "Bearer "+accessToken)
+	client := &http.Client{}
+	r, httpErr := client.Do(pr)
+	if httpErr != nil {
+		log.WithError(httpErr).Error("Notify Request Failed")
+		return
+	}
+	defer r.Body.Close()
+	if r.StatusCode != http.StatusOK {
+		data, _ := ioutil.ReadAll(r.Body)
+		logger.WithFields(log.Fields{
+			"status":   r.Status,
+			"response": string(data),
+		}).Error("LINE Notify Failed")
+	}
 }
