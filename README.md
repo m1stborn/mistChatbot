@@ -20,7 +20,7 @@ All the chatbot command starting with "/" :
 ## Demo
 | Subscribe channel  | Delete channel  | Notify message   |
 |---|---|---|
-|[image](assets/sub_command.jpg) |[image](assets/del_command.jpg)|[image](assets/notify_message.jpg)   |
+|![image](./assets/sub_command.jpg) |![image](./assets/del_command.jpg)|![image](assets/notify_message.jpg)   |
 
 ## TODO
 - [ ] Automatically renew Twitch API token.
