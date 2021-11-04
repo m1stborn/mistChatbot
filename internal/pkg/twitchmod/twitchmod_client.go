@@ -162,6 +162,7 @@ func GetUsersID(usernameList []string) (idList []string) {
 		logger.WithField("func", "GetUsersID").Error(userErr.Error())
 	}
 	if userResp != nil {
+		logger.Println(userResp)
 		for _, user := range userResp.Data.Users {
 			idList = append(idList, user.ID)
 		}
