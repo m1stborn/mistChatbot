@@ -165,10 +165,10 @@ func GetUsersID(usernameList []string) (idList []string) {
 		for _, user := range userResp.Data.Users {
 			idList = append(idList, user.ID)
 		}
-		//logger.WithFields(log.Fields{
-		//	"func":   "GetUsersID",
-		//	"idList": usernameList,
-		//}).Infof(fmt.Sprintf("User ID List: %+v", idList))
+		logger.WithFields(log.Fields{
+			"func":   "GetUsersID",
+			"idList": usernameList,
+		}).Infof(fmt.Sprintf("User ID List: %+v", idList))
 	}
 
 	return idList
