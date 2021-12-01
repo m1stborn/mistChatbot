@@ -105,12 +105,13 @@ func main() {
 
 	//step 2.2.2: create test PubSub
 	for _, channelId := range TestChannelIds {
-		youtubemod.YC.CreatePubSubByChannelId(channelId)
-		model.DB.CreateYtSubscription(&model.YtSubscription{
-			Line:            testLine,
-			LineAccessToken: testAccessToken,
-			ChannelId:       channelId,
-		})
+		fmt.Println(channelId)
+		//youtubemod.YC.CreatePubSubByChannelId(channelId)
+		//model.DB.CreateYtSubscription(&model.YtSubscription{
+		//	Line:            testLine,
+		//	LineAccessToken: testAccessToken,
+		//	ChannelId:       channelId,
+		//})
 	}
 
 	//step 3: start up our webhook server
