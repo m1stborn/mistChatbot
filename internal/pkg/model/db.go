@@ -35,6 +35,12 @@ func (d *Database) TestInit(uri string) {
 			"func": "Init",
 		}).Error(dropErr)
 	}
+	if dropErr := d.db.Migrator().DropTable(&YtSubscription{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
 
 	//create all the table
 	if !d.db.Migrator().HasTable(&User{}) {
@@ -47,6 +53,12 @@ func (d *Database) TestInit(uri string) {
 		err = d.db.Migrator().CreateTable(&Subscription{})
 	} else {
 		err = d.db.Migrator().AutoMigrate(&Subscription{})
+	}
+
+	if !d.db.Migrator().HasTable(&YtSubscription{}) {
+		err = d.db.Migrator().CreateTable(&YtSubscription{})
+	} else {
+		err = d.db.Migrator().AutoMigrate(&YtSubscription{})
 	}
 
 }
@@ -73,6 +85,12 @@ func (d *Database) Init(uri string) {
 			"func": "Init",
 		}).Error(dropErr)
 	}
+	if dropErr := d.db.Migrator().DropTable(&YtSubscription{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
 
 	//create all the table
 	if !d.db.Migrator().HasTable(&User{}) {
@@ -85,6 +103,11 @@ func (d *Database) Init(uri string) {
 		err = d.db.Migrator().CreateTable(&Subscription{})
 	} else {
 		err = d.db.Migrator().AutoMigrate(&Subscription{})
+	}
+	if !d.db.Migrator().HasTable(&YtSubscription{}) {
+		err = d.db.Migrator().CreateTable(&YtSubscription{})
+	} else {
+		err = d.db.Migrator().AutoMigrate(&YtSubscription{})
 	}
 
 }
