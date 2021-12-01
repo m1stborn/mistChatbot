@@ -16,9 +16,8 @@ import (
 var err error
 
 var (
-	port   = os.Getenv("PORT")
-	dbUri  = os.Getenv("DB_URI")
-	psHost = os.Getenv("CALLBACK_URL_BASE")
+	port  = os.Getenv("PORT")
+	dbUri = os.Getenv("DB_URI")
 )
 
 var (

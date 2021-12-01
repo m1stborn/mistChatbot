@@ -3,6 +3,9 @@ package youtubemod
 import (
 	"fmt"
 	"time"
+
+	"github.com/m1stborn/mistChatbot/internal/pkg/line"
+	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 )
 
 type YtTracker struct {
@@ -108,15 +111,15 @@ func (y *YtTracker) Update(videoJson VideoItems) {
 		if video.LiveStreamingDetails.ActualStartTime != nil {
 			if video.LiveStreamingDetails.ActualEndTime == nil {
 				//TODO: For testing comment out this loop (due to no Database!!!)
-				//accessTokens := model.DB.QuerySubByYtChannelId(video.Snippet.ChannelID)
+				accessTokens := model.DB.QuerySubByYtChannelId(video.Snippet.ChannelID)
 				//
-				//for _, token := range accessTokens {
-				//	line.SendLineNotify(token,
-				//		fmt.Sprintf("%s start streaming!\n %s",
-				//			video.Snippet.ChannelName,
-				//			y.Upcoming[video.Id].VideoUrl,
-				//		))
-				//}
+				for _, token := range accessTokens {
+					line.SendLineNotify(token,
+						fmt.Sprintf("%s start streaming!\n %s",
+							video.Snippet.ChannelName,
+							y.Upcoming[video.Id].VideoUrl,
+						))
+				}
 				fmt.Printf("%s start streaming!\n%s\n",
 					video.Snippet.ChannelName,
 					y.Upcoming[video.Id].VideoUrl,

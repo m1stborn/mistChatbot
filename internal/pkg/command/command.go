@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"github.com/m1stborn/mistChatbot/internal/pkg/youtubemod"
 	"regexp"
 	"strings"
 
@@ -67,7 +68,7 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		return fmt.Sprintf("delete %v successful!", streamerName)
 	case "/subyt":
 		//step 0: regex match command
-		re := regexp.MustCompile("^(/subyt)\\s([a-zA-Z0-9_]{4,24}$)")
+		re := regexp.MustCompile("^(/subyt)\\s([a-zA-Z0-9_-]{4,24}$)")
 		if matched := re.MatchString(text); !matched {
 			//TODO handle reply message
 			return "Wrong format of command"
@@ -79,20 +80,20 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		//TODO
 
 		//step 2: check if already sub to youtube PubSub
-		//if !model.DB.CheckYtChannelExist(channelId) {
-		//	youtubemod.CreatePubSubByChannelId(channelId)
-		//}
+		if !model.DB.CheckYtChannelExist(channelId) {
+			youtubemod.CreatePubSubByChannelId(channelId)
+		}
 		//step 3: write into DB
-		//model.DB.CreateYtSubscription(&model.YtSubscription{
-		//	Line:            user.Line,
-		//	LineAccessToken: user.LineAccessToken,
-		//	ChannelId:       channelId,
-		//})
+		model.DB.CreateYtSubscription(&model.YtSubscription{
+			Line:            user.Line,
+			LineAccessToken: user.LineAccessToken,
+			ChannelId:       channelId,
+		})
 		//TODO: using channelName
 		return fmt.Sprintf("sub %v successful!", channelId)
 	case "/delyt":
 		//step 0: regex match command
-		re := regexp.MustCompile("^(/del)\\s([a-zA-Z0-9_]{4,24}$)")
+		re := regexp.MustCompile("^(/delyt)\\s([a-zA-Z0-9_-]{4,24}$)")
 		if matched := re.MatchString(text); !matched {
 			//TODO handle reply message
 			return "Wrong format of command"
@@ -100,10 +101,10 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		args := re.FindStringSubmatch(text)
 		channelId := args[2]
 		//step 1: delete DB record
-		//err := model.DB.DeleteSubByUserChannelId(user.Line, channelId)
-		//if err == model.ErrRecordNotExist {
-		//	return "Wrong ChannelId name or not sub yet "
-		//}
+		err := model.DB.DeleteSubByUserChannelId(user.Line, channelId)
+		if err == model.ErrRecordNotExist {
+			return "Wrong ChannelId name or not sub yet "
+		}
 		//step 2: check if should remove PubSub
 		//TODO: unsubscribe from PubSub
 

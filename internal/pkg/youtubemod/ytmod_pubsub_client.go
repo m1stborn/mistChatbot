@@ -135,7 +135,7 @@ func (client *PubSubClient) HandlePubSubCallback(resp http.ResponseWriter, req *
 	params := req.URL.Query()
 	topic := params.Get("hub.topic")
 
-	fmt.Println("handleCallback from pub/sub, mode", params.Get("hub.mode"))
+	log.Println("HandlePubSubCallback from pub/sub, mode", params.Get("hub.mode"))
 
 	switch params.Get("hub.mode") {
 	case "subscribe":
