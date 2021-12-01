@@ -80,7 +80,7 @@ func (d *Database) QueryYtSubByUser(accountID string) []YtSubscription {
 }
 
 func (d *Database) DeleteSubByUserChannelId(accountID string, channelId string) error {
-	var sub Subscription
+	var sub YtSubscription
 	result := d.db.Where(&YtSubscription{Line: accountID, ChannelId: channelId}).Unscoped().Delete(&sub)
 	if result.Error != nil {
 		logger.WithFields(log.Fields{

@@ -68,8 +68,6 @@ type Link struct {
 func FeedHandler(contentType string, body []byte) {
 	var feed Feed
 
-	fmt.Println("Get PubSub feed: ", contentType)
-
 	xmlError := xml.Unmarshal(body, &feed)
 	if xmlError != nil {
 		log.Printf("XML Parse Error %v", xmlError)
