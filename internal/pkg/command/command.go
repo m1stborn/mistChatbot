@@ -80,7 +80,7 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 
 		//step 2: check if already sub to youtube PubSub
 		//if !model.DB.CheckYtChannelExist(channelId) {
-		//	youtubemod.YC.CreatePubSubByChannelId(channelId)
+		//	youtubemod.CreatePubSubByChannelId(channelId)
 		//}
 		//step 3: write into DB
 		//model.DB.CreateYtSubscription(&model.YtSubscription{
@@ -111,7 +111,7 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		return fmt.Sprintf("delete %v successful!", channelId)
 	case "/list":
 		subs := model.DB.QuerySubByUser(user.Line)
-		//ytSubs := model.DB.QueryYtSubByUser(user.Line)
+		ytSubs := model.DB.QueryYtSubByUser(user.Line)
 		//if len(subs) == 0 && len(ytSubs) == 0 {
 		if len(subs) == 0 {
 			return "You haven't subscribe any channel!"
@@ -120,9 +120,9 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		for _, sub := range subs {
 			resp += fmt.Sprintf("https://www.twitch.tv/%s\n", sub.TwitchLoginName)
 		}
-		//for _, sub := range ytSubs {
-		//	resp += fmt.Sprintf("https://www.youtube.com/channel/%s\n", sub.ChannelId)
-		//}
+		for _, sub := range ytSubs {
+			resp += fmt.Sprintf("https://www.youtube.com/channel/%s\n", sub.ChannelId)
+		}
 		return resp
 	case "/help":
 		//TODO add  line emoji

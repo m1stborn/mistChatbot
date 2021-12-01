@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/m1stborn/mistChatbot/internal/pkg/line"
+	"github.com/m1stborn/mistChatbot/internal/pkg/model"
+	"github.com/m1stborn/mistChatbot/internal/pkg/twitchmod"
 	"github.com/m1stborn/mistChatbot/internal/pkg/youtubemod"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
-
-	"github.com/m1stborn/mistChatbot/internal/pkg/line"
-	"github.com/m1stborn/mistChatbot/internal/pkg/model"
-	"github.com/m1stborn/mistChatbot/internal/pkg/twitchmod"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -90,25 +88,15 @@ func main() {
 		fmt.Println(err)
 	}
 
-	portInt, portErr := strconv.Atoi(port)
-	if portErr != nil {
-		fmt.Println(err)
-	}
-
-	//step 2.2.1: init YouTube Client
+	//step 2.2.1: init YouTube Tracker
 	youtubemod.Tracker.Init()
-
-	//step 2.2.2: start up PubSub client and Tracker
-	psClient := youtubemod.NewPubSubClient(psHost, portInt, "test app")
-
-	psClient.StartClient()
 	go youtubemod.Tracker.StartTrack()
 
-	http.HandleFunc("/youtube/pubsub/", psClient.HandlePubSubCallback)
+	http.HandleFunc("/youtube/pubsub/", youtubemod.PubSub.HandlePubSubCallback)
 
 	//step 2.2.2: create test PubSub
 	for _, channelId := range TestChannelIds {
-		psClient.CreatePubSubByChannelId(channelId)
+		youtubemod.CreatePubSubByChannelId(channelId)
 		model.DB.CreateYtSubscription(&model.YtSubscription{
 			Line:            testLine,
 			LineAccessToken: testAccessToken,

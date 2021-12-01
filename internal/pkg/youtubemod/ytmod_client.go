@@ -5,18 +5,35 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"log"
+	"os"
+	"strconv"
 )
 
 var (
+	port = os.Getenv("PORT")
+	host = os.Getenv("CALLBACK_URL_BASE")
+
 	channelBaseUrl = "https://www.youtube.com/xml/feeds/videos.xml?channel_id="
 )
 
-func (client *PubSubClient) CreatePubSubByChannelId(channelId string) {
-	client.Subscribe(channelBaseUrl+channelId, FeedHandler)
+var PubSub = &PubSubClient{}
+
+func init() {
+	portInt, portErr := strconv.Atoi(port)
+	if portErr != nil {
+		fmt.Println(portErr)
+	}
+
+	PubSub = NewPubSubClient(host, portInt, "test app")
+	PubSub.StartClient()
 }
 
-func (client *PubSubClient) UnsubscribePubSubByChannelId(channelId string) {
-	client.Unsubscribe(channelBaseUrl + channelId)
+func CreatePubSubByChannelId(channelId string) {
+	PubSub.Subscribe(channelBaseUrl+channelId, FeedHandler)
+}
+
+func UnsubscribePubSubByChannelId(channelId string) {
+	PubSub.Unsubscribe(channelBaseUrl + channelId)
 }
 
 type Feed struct {
