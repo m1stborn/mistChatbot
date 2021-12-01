@@ -36,12 +36,6 @@ func UnsubscribePubSubByChannelId(channelId string) {
 	PubSub.Unsubscribe(channelBaseUrl + channelId)
 }
 
-func (client *PubSubClient) LogSubscriptions() {
-	for _, subscription := range client.subscriptions {
-		fmt.Printf("Subscription: %+v", subscription)
-	}
-}
-
 type Feed struct {
 	Status  string  `xml:"status>http"`
 	Xmlns   string  `xml:"-xmlns"`

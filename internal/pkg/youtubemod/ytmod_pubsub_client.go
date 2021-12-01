@@ -189,10 +189,10 @@ func (client *PubSubClient) HandlePubSubCallback(resp http.ResponseWriter, req *
 
 func (client *PubSubClient) subscriptionForPath(path string) (*Subscription, bool) {
 	parts := strings.Split(path, "/")
-	if len(parts) != 3 {
+	if len(parts) != 4 {
 		return NIL_SUBSCRIPTION, false
 	}
-	id, err := strconv.Atoi(parts[2])
+	id, err := strconv.Atoi(parts[3])
 	if err != nil {
 		return NIL_SUBSCRIPTION, false
 	}
