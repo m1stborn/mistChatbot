@@ -53,7 +53,7 @@ type LiveStreamingDetails struct {
 	ActualEndTime      *time.Time `json:"actualEndTime"`
 	ScheduledStartTime time.Time  `json:"scheduledStartTime"`
 	ScheduledEndTime   time.Time  `json:"scheduledEndTime"`
-	ConcurrentViewers  uint       `json:"concurrentViewers"`
+	ConcurrentViewers  string     `json:"concurrentViewers"`
 	ActiveLiveChatId   string     `json:"activeLiveChatId"`
 }
 
