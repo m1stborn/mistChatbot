@@ -110,6 +110,7 @@ func (client Client) String() string {
 	return fmt.Sprintf("%d subscription(s): %v", len(client.subscriptions), urls)
 }
 
+//TODO: handle sub fail
 func (client *Client) makeSubscriptionRequest(subscription *Subscription) {
 	log.Println("Subscribing to", subscription.topic)
 
