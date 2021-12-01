@@ -21,7 +21,9 @@ var (
 	port   = os.Getenv("PORT")
 	dbUri  = os.Getenv("DB_URI")
 	psHost = os.Getenv("CALLBACK_URL_BASE")
+)
 
+var (
 	testStreamer    = []string{"muse_tw", "lck", "dogdog", "lolpacifictw", "m989876525", "qq7925168", "never_loses"}
 	testLine        = os.Getenv("TEST_LINE_USER")
 	testAccessToken = os.Getenv("TEST_LINE_NOTIFY_ACCESSTOKEN")
@@ -29,6 +31,22 @@ var (
 	testUser = model.User{
 		Line:            testLine,
 		LineAccessToken: testAccessToken,
+	}
+
+	TestChannelIds = []string{
+		"UC1DCedRgGHBdm81E1llLhOQ",
+		"UC-hM6YJuNYVAmUWxeIr9FeA",
+		"UC1opHUrw8rvnsadT-iGp7Cg",
+		"UCCzUftO8KOVkV4wQG1vkUvg",
+		"UCl_gCybOJRIgOXw6Qb4qJzQ",
+		"UCiEm9noegBIb-AzjqpxKffA", //羅傑
+		"UCqm3BQLlJfvkTsX_hvm0UmA", //WTM
+		"UCMwGHR0BTZuLsmjY_NT5Pwg", //Ina
+		"UChgTyjG-pdNvxxhdsXfHQ5Q", //Pavolia
+		"UCD8HOxPs4Xvsm8H0ZxXGiBw", //Mel
+		"UC_vMYWcDjmfdpH6r4TTn1MQ", //Iroha
+		"UCvInZx9h3jC2JzsIzoOebWg", //Flare
+		"UC4G-xDOf5U9luBcfpyaqF3Q", //My Channel
 	}
 )
 
@@ -86,7 +104,7 @@ func main() {
 	go youtubemod.Tracker.StartTrack()
 
 	//step 2.2.2: create test PubSub
-	for _, channelId := range TestChannelId {
+	for _, channelId := range TestChannelIds {
 		youtubemod.YC.CreatePubSubByChannelId(channelId)
 		model.DB.CreateYtSubscription(&model.YtSubscription{
 			Line:            testLine,
