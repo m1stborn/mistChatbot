@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/m1stborn/mistChatbot/internal/pkg/youtubemod"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/m1stborn/mistChatbot/internal/pkg/line"
 	"github.com/m1stborn/mistChatbot/internal/pkg/model"
@@ -16,8 +18,9 @@ import (
 var err error
 
 var (
-	port  = ":" + os.Getenv("PORT")
-	dbUri = os.Getenv("DB_URI")
+	port   = os.Getenv("PORT")
+	dbUri  = os.Getenv("DB_URI")
+	psHost = os.Getenv("CALLBACK_URL_BASE")
 
 	testStreamer    = []string{"muse_tw", "lck", "dogdog", "lolpacifictw", "m989876525", "qq7925168", "never_loses"}
 	testLine        = os.Getenv("TEST_LINE_USER")
@@ -45,14 +48,14 @@ func main() {
 	http.HandleFunc("/twitch/channelFollow", twitchmod.EventSubFollow)
 	http.HandleFunc("/twitch/streamOnline", twitchmod.EventSubStreamOnline)
 
-	//step 2: init Twitch Client
+	//step 2.1: init Twitch Client
 	//twitch := nweTwitch()
 
-	//step 2.0: delete old subscription during develop and testing
+	//step 2.1.1: delete old subscription during develop and testing
 	subIds := twitchmod.GetSubscriptions()
 	twitchmod.DeleteSubscriptions(subIds)
 
-	//step 2.1: Create Event subscriptions
+	//step 2.1.2: Create Event subscriptions
 	err = twitchmod.CreateChannelFollowSubscription("twitch", "/twitch/channelFollow")
 	err = twitchmod.CreateStreamOnlineSubscription("twitch", "/twitch/streamOnline")
 
@@ -69,7 +72,30 @@ func main() {
 		fmt.Println(err)
 	}
 
+	portInt, portErr := strconv.Atoi(port)
+	if portErr != nil {
+		fmt.Println(err)
+	}
+
+	//step 2.2.1: init YouTube Client
+	youtubemod.Tracker.Init()
+	youtubemod.YC.Init(psHost, portInt)
+
+	//step 2.2.2: start up PubSub client and Tracker
+	go youtubemod.YC.Client.StartServer()
+	go youtubemod.Tracker.StartTrack()
+
+	//step 2.2.2: create test PubSub
+	for _, channelId := range TestChannelId {
+		youtubemod.YC.CreatePubSubByChannelId(channelId)
+		model.DB.CreateYtSubscription(&model.YtSubscription{
+			Line:            testLine,
+			LineAccessToken: testAccessToken,
+			ChannelId:       channelId,
+		})
+	}
+
 	//step 3: start up our webhook server
 	fmt.Println("Starting the webserver listen on port", port)
-	log.Fatal(http.ListenAndServe(port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
