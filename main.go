@@ -97,23 +97,21 @@ func main() {
 
 	//step 2.2.1: init YouTube Client
 	youtubemod.Tracker.Init()
-	psClient := youtubemod.NewPubSubClient(psHost, portInt, "test app")
-
-	http.HandleFunc("/youtube/pubsub/", youtubemod.YC.Client.HandlePubSubCallback)
-	//For Testing usage, should remove in the future
-	http.HandleFunc("/callback/", youtubemod.YC.Client.HandlePubSubCallback)
 
 	//step 2.2.2: start up PubSub client and Tracker
+	psClient := youtubemod.NewPubSubClient(psHost, portInt, "test app")
 	go youtubemod.Tracker.StartTrack()
+
+	http.HandleFunc("/youtube/pubsub/", psClient.HandlePubSubCallback)
 
 	//step 2.2.2: create test PubSub
 	for _, channelId := range TestChannelIds {
-		psClient.UnsubscribePubSubByChannelId(channelId)
-		//model.DB.CreateYtSubscription(&model.YtSubscription{
-		//	Line:            testLine,
-		//	LineAccessToken: testAccessToken,
-		//	ChannelId:       channelId,
-		//})
+		psClient.CreatePubSubByChannelId(channelId)
+		model.DB.CreateYtSubscription(&model.YtSubscription{
+			Line:            testLine,
+			LineAccessToken: testAccessToken,
+			ChannelId:       channelId,
+		})
 	}
 
 	//step 3: start up our webhook server

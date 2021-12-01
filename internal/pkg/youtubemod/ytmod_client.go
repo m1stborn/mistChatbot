@@ -7,21 +7,9 @@ import (
 	"log"
 )
 
-type YoutubeClient struct {
-	Client      *PubSubClient
-	CallbackUrl string
-}
-
-var YC = YoutubeClient{}
-
 var (
 	channelBaseUrl = "https://www.youtube.com/xml/feeds/videos.xml?channel_id="
 )
-
-//func (yc *YoutubeClient) Init(host string, psPort int) {
-//	YC.Client = NewPubSubClient(host, psPort, "test app")
-//	YC.Client.StartClient()
-//}
 
 func (client *PubSubClient) CreatePubSubByChannelId(channelId string) {
 	client.Unsubscribe(channelBaseUrl + channelId)
