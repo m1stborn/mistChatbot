@@ -127,10 +127,10 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 	case "/help":
 		//TODO add  line emoji
 		return fmt.Sprint("指令清單:\n" +
-			"1. /sub [twitch ID]: 訂閱頻道\n   Example: /sub never_loses\n" +
-			"2. /del [twitch ID]: 刪除頻道\n   Example: /del qq7925168\n" +
-			"3. /subyt [Youtube Channel ID]: 訂閱頻道\n   Example: /sub UC1DCedRgGHBdm81E1llLhOQ\n" +
-			"4. /delyt [Youtube Channel ID]: 刪除頻道\n   Example: /del UC1DCedRgGHBdm81E1llLhOQ\n" +
+			"1. /sub [twitch ID]: 訂閱Twitch頻道\n   Example:\n	/sub never_loses\n" +
+			"2. /del [twitch ID]: 刪除Twitch頻道\n   Example:\n	/del qq7925168\n" +
+			"3. /subyt [Youtube Channel ID]: 訂閱YouTube頻道\n   Example:\n	/sub UC1DCedRgGHBdm81E1llLhOQ\n" +
+			"4. /delyt [Youtube Channel ID]: 刪除YouTube頻道\n   Example:\n	/del UC1DCedRgGHBdm81E1llLhOQ\n" +
 			"5. /list: 列出訂閱的頻道")
 	}
 	return "No this command, please check /help"
