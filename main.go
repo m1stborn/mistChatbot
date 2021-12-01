@@ -100,6 +100,8 @@ func main() {
 
 	//step 2.2.2: start up PubSub client and Tracker
 	psClient := youtubemod.NewPubSubClient(psHost, portInt, "test app")
+
+	psClient.StartClient()
 	go youtubemod.Tracker.StartTrack()
 
 	http.HandleFunc("/youtube/pubsub/", psClient.HandlePubSubCallback)
