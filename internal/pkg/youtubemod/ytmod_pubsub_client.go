@@ -27,9 +27,9 @@ type PubSubClient struct {
 	httpRequester HttpRequester            // e.g. http.Client{}.
 }
 
-func NewPubSubClient(hubURL string, self string, port int, from string) *PubSubClient {
+func NewPubSubClient(self string, port int, from string) *PubSubClient {
 	return &PubSubClient{
-		hubURL,
+		"https://pubsubhubbub.appspot.com/subscribe",
 		self,
 		port,
 		fmt.Sprintf("%s (gohubbub)", from),
@@ -117,7 +117,7 @@ func (client *PubSubClient) makeUnsubscribeRequest(subscription *Subscription) {
 }
 
 func (client *PubSubClient) formatCallbackURL(callback int) string {
-	cbUrl := fmt.Sprintf("https://%s/callback/%d", client.self, callback)
+	cbUrl := fmt.Sprintf("https://%s/youtube/pubsub/%d", client.self, callback)
 	fmt.Println(cbUrl)
 	return cbUrl
 }

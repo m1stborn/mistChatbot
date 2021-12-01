@@ -97,16 +97,18 @@ func main() {
 
 	//step 2.2.1: init YouTube Client
 	youtubemod.Tracker.Init()
-	youtubemod.YC.Init(psHost, portInt)
+	psClient := youtubemod.NewPubSubClient(psHost, portInt, "test app")
 
 	http.HandleFunc("/youtube/pubsub/", youtubemod.YC.Client.HandlePubSubCallback)
+	//For Testing usage, should remove in the future
+	http.HandleFunc("/callback/", youtubemod.YC.Client.HandlePubSubCallback)
 
 	//step 2.2.2: start up PubSub client and Tracker
 	go youtubemod.Tracker.StartTrack()
 
 	//step 2.2.2: create test PubSub
 	for _, channelId := range TestChannelIds {
-		youtubemod.YC.UnsubscribePubSubByChannelId(channelId)
+		psClient.UnsubscribePubSubByChannelId(channelId)
 		//model.DB.CreateYtSubscription(&model.YtSubscription{
 		//	Line:            testLine,
 		//	LineAccessToken: testAccessToken,

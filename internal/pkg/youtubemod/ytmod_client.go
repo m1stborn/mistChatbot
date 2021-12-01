@@ -16,20 +16,19 @@ var YC = YoutubeClient{}
 
 var (
 	channelBaseUrl = "https://www.youtube.com/xml/feeds/videos.xml?channel_id="
-	pubSubBaseUrl  = "https://pubsubhubbub.appspot.com/subscribe"
 )
 
-func (yc *YoutubeClient) Init(host string, psPort int) {
-	YC.Client = NewPubSubClient(pubSubBaseUrl, host, psPort, "test app")
-	YC.Client.StartClient()
+//func (yc *YoutubeClient) Init(host string, psPort int) {
+//	YC.Client = NewPubSubClient(host, psPort, "test app")
+//	YC.Client.StartClient()
+//}
+
+func (client *PubSubClient) CreatePubSubByChannelId(channelId string) {
+	client.Unsubscribe(channelBaseUrl + channelId)
 }
 
-func (yc *YoutubeClient) CreatePubSubByChannelId(channelId string) {
-	yc.Client.Subscribe(channelBaseUrl+channelId, FeedHandler)
-}
-
-func (yc *YoutubeClient) UnsubscribePubSubByChannelId(channelId string) {
-	yc.Client.Unsubscribe(channelBaseUrl + channelId)
+func (client *PubSubClient) UnsubscribePubSubByChannelId(channelId string) {
+	client.Subscribe(channelBaseUrl+channelId, FeedHandler)
 }
 
 type Feed struct {
