@@ -102,6 +102,7 @@ func main() {
 			ChannelId:       channelId,
 		})
 	}
+	youtubemod.PubSub.LogSubscriptions()
 
 	//step 3: start up our webhook server
 	fmt.Println("Starting the webserver listen on port", port)
