@@ -12,11 +12,11 @@ var (
 )
 
 func (client *PubSubClient) CreatePubSubByChannelId(channelId string) {
-	client.Unsubscribe(channelBaseUrl + channelId)
+	client.Subscribe(channelBaseUrl+channelId, FeedHandler)
 }
 
 func (client *PubSubClient) UnsubscribePubSubByChannelId(channelId string) {
-	client.Subscribe(channelBaseUrl+channelId, FeedHandler)
+	client.Unsubscribe(channelBaseUrl + channelId)
 }
 
 type Feed struct {
