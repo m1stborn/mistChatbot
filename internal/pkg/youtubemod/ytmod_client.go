@@ -8,7 +8,7 @@ import (
 )
 
 type YoutubeClient struct {
-	Client      *Client
+	Client      *PubSubClient
 	CallbackUrl string
 }
 
@@ -20,11 +20,16 @@ var (
 )
 
 func (yc *YoutubeClient) Init(host string, psPort int) {
-	YC.Client = NewClient(pubSubBaseUrl, host, psPort, "test app")
+	YC.Client = NewPubSubClient(pubSubBaseUrl, host, psPort, "test app")
+	YC.Client.StartClient()
 }
 
 func (yc *YoutubeClient) CreatePubSubByChannelId(channelId string) {
 	yc.Client.Subscribe(channelBaseUrl+channelId, FeedHandler)
+}
+
+func (yc *YoutubeClient) UnsubscribePubSubByChannelId(channelId string) {
+	yc.Client.Unsubscribe(channelBaseUrl + channelId)
 }
 
 type Feed struct {
