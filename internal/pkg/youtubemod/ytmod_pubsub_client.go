@@ -82,6 +82,7 @@ func (client *PubSubClient) RestoreSubscribe(topic string, id int, handler func(
 	client.subscriptions[topic] = subscription
 	if client.running {
 		client.makeSubscriptionRequest(subscription)
+		fmt.Println("Restore old PubSub Success!", id)
 	}
 }
 

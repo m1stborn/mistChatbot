@@ -23,7 +23,7 @@ func (d *Database) CreateYtVideo(vid *YtVideo) {
 }
 
 func (d *Database) DeleteYtVideo(videoId string) {
-	var vid YtSubscription
+	var vid YtVideo
 	result := d.db.Where(&YtVideo{VideoId: videoId}).Unscoped().Delete(&vid)
 	if result.Error != nil {
 		Log.WithFields(log.Fields{

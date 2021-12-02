@@ -46,6 +46,7 @@ func (y *YtTracker) StartTrack() {
 		fmt.Println("DataApi miss field:", testErr)
 		fmt.Printf("video_resource:%+v\n", oldVideoJson)
 	} else {
+		fmt.Println("Restore old video Success!")
 		y.Update(oldVideoJson)
 	}
 	//Implementation 1
