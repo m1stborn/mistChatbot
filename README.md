@@ -1,4 +1,4 @@
-# mistbot
+# mistbot - Twitch/YouTube 實況通知機器人
 
 A line chatbot that send notification to you through LINE notify when a streamer go online.
 
@@ -11,17 +11,27 @@ A line chatbot that send notification to you through LINE notify when a streamer
 ## Basic bot command
 
 All the chatbot command starting with "/" :
-1. `/sub [twitch ID]` : subscribe a channel
+1. `/sub [Twitch ID]` : subscribe a channel
    * example: /sub never_loses
-2. `/del [twitch ID]` : delete a channel
+2. `/del [Twitch ID]` : delete a channel
    * example: /del qq7925168
-3. `/list` : list all the channel that you subscribe
+3. `/subyt [YouTube ChannelID]` : subscribe a channel
+   * example: /subyt UC1DCedRgGHBdm81E1llLhOQ
+4. `/delyt [YouTube ChannelID]` : delete a channel
+   * example: /delyt UC1DCedRgGHBdm81E1llLhOQ
+5. `/list` : list all the channel that you subscribe
+
 
 ## Demo
-| Subscribe channel  | Delete channel  | Notify message   |
-|---|---|---|
-|![image](./assets/sub_command.jpg) |![image](./assets/del_command.jpg)|![image](assets/notify_message.jpg)   |
+| Subscribe Twitch channel           | Delete Twitch channel              | Notify message                      |
+|------------------------------------|------------------------------------|-------------------------------------|
+| ![image](./assets/sub_command.jpg) | ![image](./assets/del_command.jpg) | ![image](assets/notify_message.jpg) |
+
+
+| Subscribe YouTube channel    | Delete YouTube channel       | Notify message                 |
+|------------------------------|------------------------------|--------------------------------|
+| ![image](./assets/subyt.jpg) | ![image](./assets/delyt.jpg) | ![image](assets/yt_notify.jpg) |
 
 ## TODO
 - [ ] Automatically renew Twitch API token.
-- [ ] Integrate Youtube live stream.
+- [x] Integrate YouTube live stream.
