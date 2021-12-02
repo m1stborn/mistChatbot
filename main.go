@@ -21,12 +21,6 @@ var (
 	dbUri = os.Getenv("DB_URI")
 )
 
-//var (
-//	testStreamer    = []string{"muse_tw", "lck", "dogdog", "lolpacifictw", "m989876525", "qq7925168", "never_loses"}
-//	testLine        = os.Getenv("TEST_LINE_USER")
-//	testAccessToken = os.Getenv("TEST_LINE_NOTIFY_ACCESSTOKEN")
-//)
-
 func main() {
 
 	//step 1: init DB
@@ -54,15 +48,6 @@ func main() {
 	//step 2.3: create Event subscriptions
 	err = twitchmod.CreateChannelFollowSubscription("twitch", "/twitch/channelFollow")
 	err = twitchmod.CreateStreamOnlineSubscription("twitch", "/twitch/streamOnline")
-
-	//for _, streamer := range testStreamer {
-	//	err = twitchmod.CreateStreamOnlineSubscription(streamer, "/twitch/streamOnline")
-	//	model.DB.CreateSubscription(&model.Subscription{
-	//		Line:            testLine,
-	//		LineAccessToken: testAccessToken,
-	//		TwitchLoginName: streamer,
-	//	})
-	//}
 
 	if err != nil {
 		fmt.Println(err)
