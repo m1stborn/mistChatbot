@@ -91,6 +91,18 @@ func (d *Database) Init(uri string) {
 			"func": "Init",
 		}).Error(dropErr)
 	}
+	if dropErr := d.db.Migrator().DropTable(&YtVideo{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
+	if dropErr := d.db.Migrator().DropTable(&PubSubSubscription{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
 
 	//create all the table
 	if !d.db.Migrator().HasTable(&User{}) {

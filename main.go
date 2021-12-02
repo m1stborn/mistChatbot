@@ -96,15 +96,18 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	//should only do once, since YtSubscription was not drop
-	for _, channelId := range TestChannelIds {
+	for i, channelId := range TestChannelIds {
+		youtubemod.CreatePubSubByChannelId(channelId)
 		model.DB.CreateYtSubscription(&model.YtSubscription{
 			Line:            testLine,
 			LineAccessToken: testAccessToken,
 			ChannelId:       channelId,
 		})
+		model.DB.CreatePubSubSubscription(&model.PubSubSubscription{
+			Topic:      "https://www.youtube.com/xml/feeds/videos.xml?channel_id=" + channelId,
+			CallbackId: i,
+		})
 	}
-	//should only do once, since YtSubscription was not drop
 	for _, id := range TestVideoIds {
 		model.DB.CreateYtVideo(&model.YtVideo{
 			VideoId: id,
