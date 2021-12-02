@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"time"
 
+	. "github.com/m1stborn/mistChatbot/internal/pkg/logger"
 	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 
 	log "github.com/sirupsen/logrus"
@@ -85,9 +86,6 @@ func (y *YtTracker) StartTrack() {
 
 func (y *YtTracker) Update(videoJson VideoItems) {
 	for _, video := range videoJson.Items {
-
-		//fmt.Printf("video:%+v\n", video)
-
 		//step 1: This video is not a stream, discard and remove from Upcoming list
 		if video.LiveStreamingDetails == nil {
 			delete(y.Upcoming, video.Id)
@@ -116,6 +114,7 @@ func (y *YtTracker) Update(videoJson VideoItems) {
 
 		//step 4: The upcoming video start streaming, send out the Notification and remove from Upcoming list
 		if video.LiveStreamingDetails.ActualStartTime != nil {
+			//TODO: check the logic
 			if video.LiveStreamingDetails.ActualEndTime == nil {
 				//TODO: parallel run
 				//TODO: For testing comment out this loop (due to no Database!!!)
@@ -191,10 +190,6 @@ func SendLineNotify(accessToken string, message string) {
 	defer r.Body.Close()
 	if r.StatusCode != http.StatusOK {
 		data, _ := ioutil.ReadAll(r.Body)
-		log.Println("Line Notify Failed", data)
-		//logger.WithFields(log.Fields{
-		//	"status":   r.Status,
-		//	"response": string(data),
-		//}).Error("LINE Notify Failed")
+		Log.Println("Line Notify Failed", data)
 	}
 }

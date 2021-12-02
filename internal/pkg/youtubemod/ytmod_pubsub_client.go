@@ -3,6 +3,7 @@ package youtubemod
 import (
 	"bytes"
 	"fmt"
+	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -59,10 +60,15 @@ func (client *PubSubClient) StartClient() {
 }
 
 func (client *PubSubClient) Subscribe(topic string, handler func(string, []byte)) {
+	callbackId := len(client.subscriptions)
 	subscription := &Subscription{topic, len(client.subscriptions), handler, 0, false}
 	client.subscriptions[topic] = subscription
 	if client.running {
 		client.makeSubscriptionRequest(subscription)
+		model.DB.CreatePubSubSubscription(&model.PubSubSubscription{
+			Topic:      topic,
+			CallbackId: callbackId,
+		})
 	}
 }
 
@@ -82,7 +88,6 @@ func (client *PubSubClient) RestoreSubscribe(topic string, id int, handler func(
 	client.subscriptions[topic] = subscription
 	if client.running {
 		client.makeSubscriptionRequest(subscription)
-		fmt.Println("Restore old PubSub Success!", id)
 	}
 }
 

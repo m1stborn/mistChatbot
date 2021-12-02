@@ -30,32 +30,6 @@ var (
 		Line:            testLine,
 		LineAccessToken: testAccessToken,
 	}
-
-	TestChannelIds = []string{
-		"UC1DCedRgGHBdm81E1llLhOQ",
-		"UC-hM6YJuNYVAmUWxeIr9FeA",
-		"UC1opHUrw8rvnsadT-iGp7Cg",
-		"UCCzUftO8KOVkV4wQG1vkUvg",
-		"UCl_gCybOJRIgOXw6Qb4qJzQ",
-		"UCiEm9noegBIb-AzjqpxKffA", //羅傑
-		"UCqm3BQLlJfvkTsX_hvm0UmA", //WTM
-		"UCMwGHR0BTZuLsmjY_NT5Pwg", //Ina
-		"UChgTyjG-pdNvxxhdsXfHQ5Q", //Pavolia
-		"UCD8HOxPs4Xvsm8H0ZxXGiBw", //Mel
-		"UC_vMYWcDjmfdpH6r4TTn1MQ", //Iroha
-		"UCvInZx9h3jC2JzsIzoOebWg", //Flare
-		"UC4G-xDOf5U9luBcfpyaqF3Q", //My Channel
-		"UCZlDXzGoo7d44bwdNObFacg", //Katana
-		"UCK9V2B22uJYu3N7eR_BT9QA", //polka
-	}
-
-	TestVideoIds = []string{
-		"6hZ-kf1aQ1M",
-		"omgSWqwVTjY",
-		"IwlECRC8c0E",
-		"SHJgH64VN9g",
-		"nU63cC_brTo",
-	}
 )
 
 func main() {
@@ -97,23 +71,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	for i, channelId := range TestChannelIds {
-		youtubemod.CreatePubSubByChannelId(channelId)
-		model.DB.CreateYtSubscription(&model.YtSubscription{
-			Line:            testLine,
-			LineAccessToken: testAccessToken,
-			ChannelId:       channelId,
-		})
-		model.DB.CreatePubSubSubscription(&model.PubSubSubscription{
-			Topic:      "https://www.youtube.com/xml/feeds/videos.xml?channel_id=" + channelId,
-			CallbackId: i,
-		})
-	}
-	for _, id := range TestVideoIds {
-		model.DB.CreateYtVideo(&model.YtVideo{
-			VideoId: id,
-		})
-	}
+
 	// Restore PubSubClient from DB
 	var oldPubSubs []model.PubSubSubscription
 	oldPubSubs = model.DB.QueryAllPubSub()
