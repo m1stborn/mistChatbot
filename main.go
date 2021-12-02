@@ -110,6 +110,12 @@ func main() {
 			VideoId: id,
 		})
 	}
+	// Restore PubSubClient from DB
+	var oldPubSubs []model.PubSubSubscription
+	oldPubSubs = model.DB.QueryAllPubSub()
+	for _, old := range oldPubSubs {
+		youtubemod.PubSub.RestoreSubscribe(old.Topic, old.CallbackId, youtubemod.FeedHandler)
+	}
 
 	//step 2.2.1: init YouTube Tracker
 	youtubemod.Tracker.Init()

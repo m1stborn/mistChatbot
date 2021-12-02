@@ -3,12 +3,11 @@ package youtubemod
 import (
 	"encoding/xml"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"log"
 	"os"
 	"strconv"
 
-	"github.com/m1stborn/mistChatbot/internal/pkg/model"
+	"github.com/go-playground/validator/v10"
 )
 
 var (
@@ -28,13 +27,6 @@ func init() {
 
 	PubSub = NewPubSubClient(host, portInt, "test app")
 	PubSub.StartClient()
-
-	// Restore PubSubClient from DB
-	var oldPubSubs []model.PubSubSubscription
-	oldPubSubs = model.DB.QueryAllPubSub()
-	for _, old := range oldPubSubs {
-		PubSub.RestoreSubscribe(old.Topic, old.CallbackId, FeedHandler)
-	}
 }
 
 func CreatePubSubByChannelId(channelId string) {
