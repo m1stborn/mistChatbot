@@ -98,7 +98,6 @@ func (d *Database) Init(uri string) {
 	} else {
 		err = d.db.Migrator().AutoMigrate(&User{})
 	}
-
 	if !d.db.Migrator().HasTable(&Subscription{}) {
 		err = d.db.Migrator().CreateTable(&Subscription{})
 	} else {
@@ -108,6 +107,17 @@ func (d *Database) Init(uri string) {
 		err = d.db.Migrator().CreateTable(&YtSubscription{})
 	} else {
 		err = d.db.Migrator().AutoMigrate(&YtSubscription{})
+	}
+
+	if !d.db.Migrator().HasTable(&PubSubSubscription{}) {
+		err = d.db.Migrator().CreateTable(&PubSubSubscription{})
+	} else {
+		err = d.db.Migrator().AutoMigrate(&PubSubSubscription{})
+	}
+	if !d.db.Migrator().HasTable(&YtVideo{}) {
+		err = d.db.Migrator().CreateTable(&YtVideo{})
+	} else {
+		err = d.db.Migrator().AutoMigrate(&YtVideo{})
 	}
 
 }

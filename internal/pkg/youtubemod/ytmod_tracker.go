@@ -3,14 +3,14 @@ package youtubemod
 import (
 	"bytes"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
 
 	"github.com/m1stborn/mistChatbot/internal/pkg/model"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type YtTracker struct {
@@ -38,6 +38,16 @@ func (y *YtTracker) Init() {
 }
 
 func (y *YtTracker) StartTrack() {
+	// Restore VideoIDs from DB
+	var oldVideos []string
+	oldVideos = model.DB.QueryAllVideoIds()
+	oldVideoJson, testErr := GetStreamIdLiveDetailByIds(oldVideos)
+	if testErr != nil {
+		fmt.Println("DataApi miss field:", testErr)
+		fmt.Printf("video_resource:%+v\n", oldVideoJson)
+	} else {
+		y.Update(oldVideoJson)
+	}
 	//Implementation 1
 	//ticker := time.NewTicker(5 * time.Second)
 	//quit := make(chan struct{})
@@ -52,16 +62,6 @@ func (y *YtTracker) StartTrack() {
 	//		}
 	//	}
 	//}()
-
-	//TODO: Future work: restore videoIds from DB
-	//Now just create some testing videoIds
-	testVideoJson, testErr := GetStreamIdLiveDetailByIds(TestVideoIds)
-	if testErr != nil {
-		fmt.Println("DataApi miss field:", testErr)
-		fmt.Printf("video_resource:%+v\n", testVideoJson)
-	} else {
-		y.Update(testVideoJson)
-	}
 
 	//Implementation 2
 	tick := time.Tick(60 * time.Second)
@@ -91,6 +91,7 @@ func (y *YtTracker) Update(videoJson VideoItems) {
 		if video.LiveStreamingDetails == nil {
 			delete(y.Upcoming, video.Id)
 			y.VideoIds = remove(y.VideoIds, video.Id)
+			model.DB.DeleteYtVideo(video.Id)
 			continue
 		}
 
@@ -115,6 +116,7 @@ func (y *YtTracker) Update(videoJson VideoItems) {
 		//step 4: The upcoming video start streaming, send out the Notification and remove from Upcoming list
 		if video.LiveStreamingDetails.ActualStartTime != nil {
 			if video.LiveStreamingDetails.ActualEndTime == nil {
+				//TODO: parallel run
 				//TODO: For testing comment out this loop (due to no Database!!!)
 				accessTokens := model.DB.QuerySubByYtChannelId(video.Snippet.ChannelID)
 				//
@@ -133,6 +135,7 @@ func (y *YtTracker) Update(videoJson VideoItems) {
 
 			delete(y.Upcoming, video.Id)
 			y.VideoIds = remove(y.VideoIds, video.Id)
+			model.DB.DeleteYtVideo(video.Id)
 		}
 	}
 }
@@ -153,6 +156,9 @@ func (y *YtTracker) AddUpcoming(feed Feed) {
 			VideoUrl:    videoBaseUrl + entry.VideoID,
 		}
 		y.VideoIds = append(y.VideoIds, entry.VideoID)
+		model.DB.CreateYtVideo(&model.YtVideo{
+			VideoId: entry.VideoID,
+		})
 	}
 }
 

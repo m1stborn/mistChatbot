@@ -12,25 +12,25 @@ import (
 	"time"
 )
 
-type Subscription struct {
-	topic    string
-	id       int
-	handler  func(string, []byte) // Content-Type, ResponseBody
-	lease    time.Duration
-	verified bool
-}
-
-func (s Subscription) String() string {
-	return fmt.Sprintf("%s (#%d %s)", s.topic, s.id, s.lease)
-}
-
-var NIL_SUBSCRIPTION = &Subscription{}
-
-// A HttpRequester is used to make HTTP requests.  http.Client{} satisfies this
-// interface.
-type HttpRequester interface {
-	Do(req *http.Request) (resp *http.Response, err error)
-}
+//type Subscription struct {
+//	topic    string
+//	id       int
+//	handler  func(string, []byte) // Content-Type, ResponseBody
+//	lease    time.Duration
+//	verified bool
+//}
+//
+//func (s Subscription) String() string {
+//	return fmt.Sprintf("%s (#%d %s)", s.topic, s.id, s.lease)
+//}
+//
+//var NIL_SUBSCRIPTION = &Subscription{}
+//
+//// A HttpRequester is used to make HTTP requests.  http.Client{} satisfies this
+//// interface.
+//type HttpRequester interface {
+//	Do(req *http.Request) (resp *http.Response, err error)
+//}
 
 // Client allows you to make PubSubHubbub subscriptions and register callback
 // handlers that will be executed when an update is received.

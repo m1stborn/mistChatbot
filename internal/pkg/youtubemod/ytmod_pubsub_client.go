@@ -12,9 +12,25 @@ import (
 	"time"
 )
 
-//type HttpRequester interface {
-//	Do(req *http.Request) (resp *http.Response, err error)
-//}
+type Subscription struct {
+	topic    string
+	id       int
+	handler  func(string, []byte) // Content-Type, ResponseBody
+	lease    time.Duration
+	verified bool
+}
+
+func (s Subscription) String() string {
+	return fmt.Sprintf("%s (#%d %s)", s.topic, s.id, s.lease)
+}
+
+var NIL_SUBSCRIPTION = &Subscription{}
+
+// A HttpRequester is used to make HTTP requests.  http.Client{} satisfies this
+// interface.
+type HttpRequester interface {
+	Do(req *http.Request) (resp *http.Response, err error)
+}
 
 type PubSubClient struct {
 	hubURL string
@@ -58,6 +74,14 @@ func (client *PubSubClient) Unsubscribe(topic string) {
 		}
 	} else {
 		log.Printf("Cannot unsubscribe, %s doesn't exist.", topic)
+	}
+}
+
+func (client *PubSubClient) RestoreSubscribe(topic string, id int, handler func(string, []byte)) {
+	subscription := &Subscription{topic, id, handler, 0, false}
+	client.subscriptions[topic] = subscription
+	if client.running {
+		client.makeSubscriptionRequest(subscription)
 	}
 }
 

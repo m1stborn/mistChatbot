@@ -75,7 +75,6 @@ func HandleCommand(text string, user *model.User, isUser bool) string {
 		}
 		args := re.FindStringSubmatch(text)
 		channelId := args[2]
-		fmt.Println(channelId)
 		//step 1: check if the YtChannel exist
 		//TODO
 

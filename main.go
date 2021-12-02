@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/m1stborn/mistChatbot/internal/pkg/line"
 	"github.com/m1stborn/mistChatbot/internal/pkg/model"
 	"github.com/m1stborn/mistChatbot/internal/pkg/twitchmod"
 	"github.com/m1stborn/mistChatbot/internal/pkg/youtubemod"
-	"log"
-	"net/http"
-	"os"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -44,6 +45,15 @@ var (
 		"UC_vMYWcDjmfdpH6r4TTn1MQ", //Iroha
 		"UCvInZx9h3jC2JzsIzoOebWg", //Flare
 		"UC4G-xDOf5U9luBcfpyaqF3Q", //My Channel
+		"UCZlDXzGoo7d44bwdNObFacg", //Katana
+		"UCK9V2B22uJYu3N7eR_BT9QA", //polka
+	}
+
+	TestVideoIds = []string{
+		"6hZ-kf1aQ1M",
+		"omgSWqwVTjY",
+		"IwlECRC8c0E",
+		"D2tjfs_Dn7A",
 	}
 )
 
@@ -86,6 +96,20 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	//should only do once, since YtSubscription was not drop
+	for _, channelId := range TestChannelIds {
+		model.DB.CreateYtSubscription(&model.YtSubscription{
+			Line:            testLine,
+			LineAccessToken: testAccessToken,
+			ChannelId:       channelId,
+		})
+	}
+	//should only do once, since YtSubscription was not drop
+	for _, id := range TestVideoIds {
+		model.DB.CreateYtVideo(&model.YtVideo{
+			VideoId: id,
+		})
+	}
 
 	//step 2.2.1: init YouTube Tracker
 	youtubemod.Tracker.Init()
@@ -94,14 +118,6 @@ func main() {
 	http.HandleFunc("/youtube/pubsub/", youtubemod.PubSub.HandlePubSubCallback)
 
 	//step 2.2.2: create test PubSub
-	for _, channelId := range TestChannelIds {
-		youtubemod.CreatePubSubByChannelId(channelId)
-		model.DB.CreateYtSubscription(&model.YtSubscription{
-			Line:            testLine,
-			LineAccessToken: testAccessToken,
-			ChannelId:       channelId,
-		})
-	}
 
 	//step 3: start up our webhook server
 	fmt.Println("Starting the webserver listen on port", port)

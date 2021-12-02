@@ -14,14 +14,6 @@ import (
 )
 
 var (
-	TestVideoIds = []string{
-		"Oz3_vVjPcEc",
-		"6hZ-kf1aQ1M",
-		"omgSWqwVTjY",
-		"SwXpRkcFH9U",
-		"9bkKurtHyjs",
-		"s_6FlkJS3ew",
-	}
 	YtToken = os.Getenv("YOUTUBE_DATA_API_TOKEN")
 
 	dataApiBaseUrl = "https://youtube.googleapis.com/youtube/v3/videos"
