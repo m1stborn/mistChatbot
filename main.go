@@ -55,6 +55,7 @@ func main() {
 	err = twitchmod.CreateChannelFollowSubscription("twitch", "/twitch/channelFollow")
 	err = twitchmod.CreateStreamOnlineSubscription("twitch", "/twitch/streamOnline")
 
+
 	for _, streamer := range testStreamer {
 		err = twitchmod.CreateStreamOnlineSubscription(streamer, "/twitch/streamOnline")
 		model.DB.CreateSubscription(&model.Subscription{
