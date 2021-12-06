@@ -141,6 +141,13 @@ func (d *Database) Init(uri string) {
 	}
 	if !d.db.Migrator().HasTable(&YtSubscription{}) {
 		err = d.db.Migrator().CreateTable(&YtSubscription{})
+		for _, channelId := range TestChannelIds {
+			d.CreateYtSubscription(&YtSubscription{
+				Line:            testLine,
+				LineAccessToken: testAccessToken,
+				ChannelId:       channelId,
+			})
+		}
 	} else {
 		//err = d.db.Migrator().AutoMigrate(&YtSubscription{})
 	}
