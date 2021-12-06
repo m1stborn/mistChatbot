@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"os"
 )
 
 var (
@@ -33,6 +34,9 @@ var (
 		"SHJgH64VN9g",
 		"nU63cC_brTo",
 	}
+
+	testLine        = os.Getenv("TEST_LINE_USER")
+	testAccessToken = os.Getenv("TEST_LINE_NOTIFY_ACCESSTOKEN")
 )
 
 type Database struct {
@@ -101,28 +105,32 @@ func (d *Database) Init(uri string) {
 
 	//drop old table
 	//TODO: should remove in the future
-	//if dropErr := d.db.Migrator().DropTable(&Subscription{}); dropErr != nil {
-	//	logger.WithFields(log.Fields{
-	//		"pkg":  "model",
-	//		"func": "Init",
-	//	}).Error(dropErr)
-	//}
-	//if dropErr := d.db.Migrator().DropTable(&User{}); dropErr != nil {
-	//	logger.WithFields(log.Fields{
-	//		"pkg":  "model",
-	//		"func": "Init",
-	//	}).Error(dropErr)
-	//}
-	//if dropErr := d.db.Migrator().DropTable(&YtSubscription{}); dropErr != nil {
-	//	logger.WithFields(log.Fields{
-	//		"pkg":  "model",
-	//		"func": "Init",
-	//	}).Error(dropErr)
-	//}
+	if dropErr := d.db.Migrator().DropTable(&User{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
+	if dropErr := d.db.Migrator().DropTable(&Subscription{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
+	if dropErr := d.db.Migrator().DropTable(&YtSubscription{}); dropErr != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "Init",
+		}).Error(dropErr)
+	}
 
 	//create all the table
 	if !d.db.Migrator().HasTable(&User{}) {
 		err = d.db.Migrator().CreateTable(&User{})
+		d.CreateUser(&User{
+			Line:            testLine,
+			LineAccessToken: testAccessToken,
+		})
 	} else {
 		//err = d.db.Migrator().AutoMigrate(&User{})
 	}

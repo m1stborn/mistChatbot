@@ -11,8 +11,9 @@ type User struct {
 	Line            string `gorm:"primaryKey;unique"` //line userID
 	LineAccessToken string //for notify usage
 
-	Subscriptions []Subscription `gorm:"foreignKey:Line;references:Line"`
-	Enable        bool           `gorm:"default:true"`
+	Subscriptions  []Subscription   `gorm:"foreignKey:Line;references:Line"`
+	YtSubscription []YtSubscription `gorm:"foreignKey:Line;references:Line"`
+	Enable         bool             `gorm:"default:true"`
 
 	//Type    string //`json:"type,omitempty"`
 	//Email   string //`json:"email"`
