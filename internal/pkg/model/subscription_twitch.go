@@ -97,6 +97,7 @@ func (d *Database) DeleteSubByUserBroadcaster(accountID string, broadcaster stri
 }
 
 func (d *Database) DeleteSubUserUnfollow(accountID string) {
+	//Delete Twitch Subscription
 	var sub Subscription
 	result := d.db.Where(&Subscription{Line: accountID}).Unscoped().Delete(&sub)
 	if result.Error != nil {
@@ -106,4 +107,13 @@ func (d *Database) DeleteSubUserUnfollow(accountID string) {
 		}).Error(result.Error)
 	} //no need to handle if user not sub anything
 
+	//Delete YouTube Subscription
+	var ytSub YtSubscription
+	result = d.db.Where(&YtSubscription{Line: accountID}).Unscoped().Delete(&ytSub)
+	if result.Error != nil {
+		logger.WithFields(log.Fields{
+			"pkg":  "model",
+			"func": "DeleteSubUserUnfollow",
+		}).Error(result.Error)
+	} //no need to handle if user not sub anything
 }
